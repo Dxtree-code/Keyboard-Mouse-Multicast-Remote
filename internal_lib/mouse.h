@@ -5,6 +5,7 @@
 #include <iostream>
 #define MOUSE_STATE_BUFFER  255
 
+
 struct MouseState{
     int dx = 0;
     int dy = 0;

@@ -1,25 +1,28 @@
 #pragma once
 
 #include "../vendor/asio/asio/include/asio.hpp"
+#include "mouse.h"  
+#include "serializer.hpp"
+
 #include <iostream>
 #include <thread>
 #include <chrono>
 #include <string>
+
+
 struct UdpMulticastServer {
     asio::io_context& io_context;
     asio::ip::udp::socket socket;
     asio::ip::udp::endpoint multicast_endpoint;
-    std::string message;
 
     UdpMulticastServer(asio::io_context& io, const std::string& address,
-                       unsigned short port, const std::string& msg)
+                       unsigned short port)
         : io_context(io),
           socket(io_context, asio::ip::udp::v4()),
-          multicast_endpoint(asio::ip::make_address(address), port),
-          message(msg)
+          multicast_endpoint(asio::ip::make_address(address), port)
     {
 
     }
 
-    void send_loop(int interval_seconds);
+    void send_loop(int interval_seconds, MouseCapture * mouseCapture);
 };

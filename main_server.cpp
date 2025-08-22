@@ -8,9 +8,8 @@ int main() {
         // Configure server
         std::string multicast_address = "172.29.224.207";
         unsigned short multicast_port = 12345;
-        std::string message = "Hello Multicast Clients!";
 
-        UdpMulticastServer server(io_context, multicast_address, multicast_port, message);
+        UdpMulticastServer server(io_context, multicast_address, multicast_port);
 
         // Run the sending loop
         server.send_loop(1);
