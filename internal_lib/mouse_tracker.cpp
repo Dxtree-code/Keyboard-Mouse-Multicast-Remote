@@ -1,6 +1,5 @@
 #include "mouse_tracker.h"
 #include "mouse.h"
-
 #include <windows.h>
 #include <thread>
 #include <atomic>
