@@ -1,7 +1,7 @@
 #include "MulticastServer.h"
 
 
-void UdpMulticastServer::send_loop(int interval_seconds = 10, MouseCapture * mouseCapture) {
+void UdpMulticastServer::send_loop(int interval_seconds, MouseCapture * mouseCapture) {
     MouseState state;
     uint8_t buf[16]={};
     while (true) {

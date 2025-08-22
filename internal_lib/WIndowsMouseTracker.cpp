@@ -7,7 +7,7 @@
 #define SLEEP_DURATION 10 // ms
 
 // Poll the mouse and push to capture only on change
-void PollMouse(MouseCapture& cap) {
+void PollMouseWindows(MouseCapture& cap) {
     POINT prevPos = { -1, -1 };
     bool prevLeft = false, prevRight = false, prevMiddle = false;
     short prevWheel = 0;
