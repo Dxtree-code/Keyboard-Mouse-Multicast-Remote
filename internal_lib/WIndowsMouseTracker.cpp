@@ -3,8 +3,9 @@
 #include <chrono>
 #include <windows.h>
 #include "mouse.h"
+#include "mouseTracker.h"
 
-#define SLEEP_DURATION 10 // ms
+#define SLEEP_DURATION 20 // ms
 
 // Poll the mouse and push to capture only on change
 void PollMouseWindows(MouseCapture& cap) {
@@ -28,49 +29,90 @@ void PollMouseWindows(MouseCapture& cap) {
         int dy = pos.y - prevPos.y;
 
         // Only push if there is a change
-        if (dx != 0 || dy != 0 || leftNow != prevLeft || rightNow != prevRight
-            || middleNow != prevMiddle || dScroll != 0) {
+        // if (dx != 0 || dy != 0 || leftNow != prevLeft || rightNow != prevRight
+        //     || middleNow != prevMiddle || dScroll != 0) {
 
-            cap.push(dx, dy, dScroll, leftNow, rightNow, middleNow);
+        cap.push(dx, dy, dScroll, leftNow, rightNow, middleNow);
 
-            prevPos = pos;
-            prevLeft = leftNow;
-            prevRight = rightNow;
-            prevMiddle = middleNow;
-            prevWheel = wheelNow;
-        }
+        prevPos = pos;
+        prevLeft = leftNow;
+        prevRight = rightNow;
+        prevMiddle = middleNow;
+        prevWheel = wheelNow;
+        
+        std::cout<<"dx: "<<dx<<" dy: "<<dy<<std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_DURATION));
     }
 }
 
-// void PrintMouseState(const MouseState& state) {
-//     std::cout << "dx: " << state.dx
-//               << " | dy: " << state.dy
-//               << " | dScroll: " << state.dScroll
-//               << " | Left: " << state.leftClick
-//               << " | Right: " << state.rightClick
-//               << " | Middle: " << state.midClick
-//               << std::endl;
-// }
 
-// int main() {
-//     MouseCapture* cap = MouseCapture::GetInstance();
+void WinApplyMouseState(const MouseState& state, MouseState& prevState) {
+    INPUT input = {0};
+    input.type = INPUT_MOUSE;
 
-//     std::thread poller(PollMouse, std::ref(*cap));
-//     poller.detach(); // run polling in background
+    // --- Move mouse relative ---
+    if (state.dx != 0 || state.dy != 0) {
+        input.mi.dx = state.dx;
+        input.mi.dy = state.dy;
+        input.mi.dwFlags = MOUSEEVENTF_MOVE;
+        SendInput(1, &input, sizeof(INPUT));
+    }
+
+    // --- Scroll wheel ---
+    if (state.dScroll != 0) {
+        input.mi = {};
+        input.type = INPUT_MOUSE;
+        input.mi.mouseData = state.dScroll * WHEEL_DELTA; // 1 = 120 units
+        input.mi.dwFlags = MOUSEEVENTF_WHEEL;
+        SendInput(1, &input, sizeof(INPUT));
+    }
+
+    // --- Left click ---
+    if (state.leftClick != prevState.leftClick) {
+        // Down
+        if (state.leftClick ==1){
+            input.mi = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+            SendInput(1, &input, sizeof(INPUT));
+        }
+        else{
+            input.mi = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_LEFTUP;
+            SendInput(1, &input, sizeof(INPUT));
+        }
+        prevState.leftClick = state.leftClick;
+    }
 
 
-//     int lclickCount =0;
-//     bool leftClickCount = false;
+    // --- Right click ---
+    if (state.rightClick != prevState.rightClick) {
+        if(state.rightClick == 1){
+            input.mi = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
+            SendInput(1, &input, sizeof(INPUT));
+        }else{
+            input.mi = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
+            SendInput(1, &input, sizeof(INPUT));
+        }
+        prevState.rightClick = state.rightClick;
+    }
 
-//     while (true) {
-//         MouseState state;
-//         if (cap->poll(state)) { // Only get new events
-//             system("cls");       // clear console for readability
-//             PrintMouseState(state);
-//         }
-//         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-//     }
-//     return 0;
-// }
+    // --- Middle click ---
+    if (state.midClick != prevState.midClick) {
+        input.mi = {};
+        input.type = INPUT_MOUSE;
+        input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+        SendInput(1, &input, sizeof(INPUT));
+
+        input.mi = {};
+        input.type = INPUT_MOUSE;
+        input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+        SendInput(1, &input, sizeof(INPUT));
+    }
+}

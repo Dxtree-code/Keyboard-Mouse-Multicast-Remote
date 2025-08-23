@@ -12,7 +12,7 @@ int startTrackServer(){
         asio::io_context io_context;
 
         // Configure server
-        std::string multicast_address = "172.29.224.207";
+        std::string multicast_address = "10.22.65.108";
         unsigned short multicast_port = 12345;
 
         UdpMulticastServer server(io_context, multicast_address, multicast_port);

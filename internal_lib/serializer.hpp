@@ -22,3 +22,5 @@
 void clearBuff(uint8_t *buf, int len );
 
 void formatMouseData(MouseState &mState,uint8_t *buf, int len);
+
+void parseMouseData(MouseState &mState, const uint8_t *buf, int len);

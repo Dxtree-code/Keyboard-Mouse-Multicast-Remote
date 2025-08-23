@@ -28,7 +28,7 @@ void MouseDrag(int startX, int startY, int endX, int endY, int steps = 20)
         inputMove.mi.dy = (y * 65535) / GetSystemMetrics(SM_CYSCREEN);
         SendInput(1, &inputMove, sizeof(INPUT));
 
-        Sleep(10); // small delay for smooth dragging
+        Sleep(10); // small delay fowr smooth dragging
     }
 
     // Release left mouse button
