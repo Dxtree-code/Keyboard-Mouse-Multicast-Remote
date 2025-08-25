@@ -1,4 +1,4 @@
-#include "internal_lib/server.h"
+#include "internal_lib/internal_lib.hpp"
 
 
 int main() {

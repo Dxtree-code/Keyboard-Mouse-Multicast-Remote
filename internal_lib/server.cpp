@@ -1,7 +1,6 @@
-#include "MulticastServer.h"
-#include "server.h"
+#include "internal_lib.hpp"
 #include <thread>
-#include "mouseTracker.h"
+
 
 int startTrackServer(){
     MouseCapture *capture = MouseCapture::GetInstance();

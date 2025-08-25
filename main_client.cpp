@@ -1,4 +1,4 @@
-#include "internal_lib/client.h"
+#include "internal_lib/internal_lib.hpp"
 #include <iostream>
 #include <string>
 int main(){

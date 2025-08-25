@@ -1,3 +1,8 @@
+define rwildcard
+  $(wildcard $1$2) \
+  $(foreach d,$(wildcard $1*/),$(call rwildcard,$d,$2))
+endef
+
 CC = g++
 BUILD_FOLDER = ./build
 INCLUDES = -I./vendor/asio/asio/include
@@ -7,18 +12,21 @@ LDFLAGS = -static -lws2_32
 CFLAGS += -D_WIN32_WINNT=0x0A00
 CFLAGS += -m64
 
-SRCS  = main_server.cpp main_client.cpp $(wildcard internal_lib/*.cpp)
-OBJS = $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(SRCS)) 
+SRCS  = main_server.cpp main_client.cpp test.cpp $(call rwildcard,internal_lib/,*.cpp)
+OBJS = $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(notdir $(SRCS))) 
 
-SRCSS  = main_server.cpp  $(wildcard internal_lib/*.cpp)
-OBJSS = $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(SRCSS)) 
+SRCSS  = main_server.cpp  $(call rwildcard,internal_lib/,*.cpp)
+OBJSS =  $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(notdir $(SRCSS))) 
 
-SRCSC = main_client.cpp $(wildcard internal_lib/*.cpp)
-OBJSC = $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(SRCSC)) 
+SRCSC = main_client.cpp $(call rwildcard,internal_lib/,*.cpp)
+OBJSC =  $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(notdir $(SRCSC)))
 
+SRCST = test.cpp $(call rwildcard,internal_lib/,*.cpp)
+OBJST =  $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(notdir $(SRCST)))
 
-SRCST = test.cpp $(wildcard internal_lib/*.cpp)
-OBJST = $(patsubst %.cpp,$(BUILD_FOLDER)/%.o,$(SRCST)) 
+vpath %.cpp $(sort $(dir $(SRCS))) #penting buat mapping
+
+SUBDIRS := $(wildcard internal_lib/*/)
 
 all: $(BUILD_FOLDER)/main_server.exe $(BUILD_FOLDER)/main_client.exe
 
@@ -38,7 +46,10 @@ $(BUILD_FOLDER)/%.o: %.cpp | $(BUILD_FOLDER)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BUILD_FOLDER):
-	mkdir "$(BUILD_FOLDER)/internal_lib"
+	mkdir "$(BUILD_FOLDER)/"
 
+
+echo:
+	@echo "${SRCSS}"
 clean:
 	rm -rf $(BUILD_FOLDER)
