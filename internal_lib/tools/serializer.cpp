@@ -93,11 +93,13 @@ void formatKeyboardData(KeyboardState &kState, uint8_t *buf, int len){
 
 
 void parseKeyboardData(KeyboardState &kState, const uint8_t *buf, int len){
+    kState.code =0;
+    kState.press =0;
     uint8_t opCode = buf[0];
 
     // DEBUG
-    if (opCode != MOUSE_ACTION){
-        std::cout<<"opCode incorrect for mouse action"<<std::endl;
+    if (opCode != KEYBOARD_ACTION){
+        std::cout<<"opCode incorrect for KeyboadAction"<<std::endl;
         return;
     }
     

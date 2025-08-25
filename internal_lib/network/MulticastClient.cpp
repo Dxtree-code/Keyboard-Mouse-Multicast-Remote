@@ -4,27 +4,42 @@ void  UdpMultiCastClient::listen_loop() {
     asio::ip::udp::endpoint sender_endpoint;
 
     MouseState mState;
-    MouseState prevState;
+    MouseState prevMState;
+
+    KeyboardState kState;
     while (true) {
         try {
             size_t bytes_received = socket.receive_from(
                 asio::buffer(recv_buffer), sender_endpoint);
 
-            if (bytes_received >= 16) { // check if buffer is valid
-                parseMouseData(mState, recv_buffer.data(), bytes_received);
-
-                // Handle the received MouseState
-                std::cout << "Received packet from " 
-                            << sender_endpoint.address().to_string() << ": "
-                            << "dx=" << mState.dx 
-                            << ", dy=" << mState.dy 
-                            << ", left=" << mState.leftClick
-                            << ", right=" << mState.rightClick
-                            << ", mid=" << mState.midClick
-                            << std::endl;
-                
-                WinApplyMouseState(mState, prevState);
+            if (bytes_received != 16) { // check if buffer is valid
+              std::cout<<"Catch data with unrecognize bytesize"<<std::endl;
             }
+
+            auto data = recv_buffer.data();
+            if (isMouseData(data, 16)){
+                parseMouseData(mState, data, bytes_received);
+                  // Handle the received MouseState
+                  std::cout << "Received packet from " 
+                              << sender_endpoint.address().to_string() << ": "
+                              << "dx=" << mState.dx 
+                              << ", dy=" << mState.dy 
+                              << ", left=" << mState.leftClick
+                              << ", right=" << mState.rightClick
+                              << ", mid=" << mState.midClick
+                              << std::endl;
+                  
+                  WinApplyMouseState(mState, prevMState);
+            }else if (isKeyboardData(data, 16)){
+                parseKeyboardData(kState, data, 16);
+                std::cout
+                    << "isKeyDown=" << kState.press 
+                    << ", code=" << kState.code
+                    << std::endl;
+                WinApplyKeyInput(kState.press, kState.code );
+            }
+
+            
         } catch (std::exception& e) {
             std::cerr << "Receive error: " << e.what() << std::endl;
         }

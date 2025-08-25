@@ -42,12 +42,12 @@ void MessagePump(){
 }
 
 void startHook(){
-
     std::thread eventPump(MessagePump);
     eventPump.detach();
 }
 
 // Poll the mouse and push to capture only on change
+// ini mausikin cap kedalam rada redundant soalnya cap itu singleton
 void PollMouseWindows(MouseCapture& cap) {
     //start hook untuk event mouse yang butuh hook
     startHook();

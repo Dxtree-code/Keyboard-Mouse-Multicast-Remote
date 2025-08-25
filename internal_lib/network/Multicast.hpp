@@ -1,6 +1,7 @@
 #pragma once
 #include "../../vendor/asio/asio/include/asio.hpp"
 #include "../mouse/Mouse.hpp"  
+#include "../keyboard/keyboard.hpp"
 #include "../tools/serializer.hpp"
 #include "../mouse/MouseTracker.hpp"
 
@@ -24,6 +25,7 @@ struct UdpMulticastServer {
     }
 
     void send_loop(int interval_seconds, MouseCapture * mouseCapture);
+    void send_loop(int interval_seconds, KeyboardCapture * KeyboardCapture);
 };
 
 

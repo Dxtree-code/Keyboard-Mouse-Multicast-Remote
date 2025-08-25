@@ -25,3 +25,11 @@ bool KeyboardStateQueue::pop(KeyboardState &outState){
     return true;
 }
 
+
+std::unique_ptr<KeyboardCapture> KeyboardCapture::instance = nullptr;
+KeyboardCapture * KeyboardCapture::GetInstance(){
+    if (!instance){
+        instance = std::make_unique<KeyboardCapture>(KeyboardCapture());
+    }
+    return instance.get();
+}

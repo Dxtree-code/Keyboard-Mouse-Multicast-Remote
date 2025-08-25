@@ -5,7 +5,7 @@ endef
 
 CC = g++
 BUILD_FOLDER = ./build
-INCLUDES = -I./vendor/asio/asio/include
+INCLUDES = -I ./vendor/asio/asio/include
 CFLAGS = -Wall -g -std=c++17 
 LDFLAGS = -static -lws2_32
 

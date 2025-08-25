@@ -4,6 +4,8 @@
 #pragma once 
 #define KEYBOARD_STATE_BUFFER 256
 
+
+#include "KeyboardWindows.h"
 #include<memory>
 struct KeyboardState{
     bool press; // 0 key up, 1 key down
