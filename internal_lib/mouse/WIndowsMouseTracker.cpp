@@ -72,16 +72,16 @@ void PollMouseWindows(MouseCapture& cap) {
         int dz = scrollDelta.exchange(0);
 
         // Only push if there is a change
-        // if (dx != 0 || dy != 0 || leftNow != prevLeft || rightNow != prevRight
-        //     || middleNow != prevMiddle || dScroll != 0) {
+        if (dx != 0 || dy != 0 || leftNow != prevLeft || rightNow != prevRight
+            || middleNow != prevMiddle || dz != 0) {
 
-        cap.push(dx, dy, dz, leftNow, rightNow, middleNow);
+            cap.push(dx, dy, dz, leftNow, rightNow, middleNow);
 
-        prevPos = pos;
-        prevLeft = leftNow;
-        prevRight = rightNow;
-        prevMiddle = middleNow;
-        
+            prevPos = pos;
+            prevLeft = leftNow;
+            prevRight = rightNow;
+            prevMiddle = middleNow;
+        }
         // std::cout<<"dx: "<<dx<<" dy: "<<dy<<" dz: "<<dz<<std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_DURATION));
