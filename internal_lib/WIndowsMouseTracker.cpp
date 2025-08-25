@@ -4,14 +4,56 @@
 #include <windows.h>
 #include "mouse.h"
 #include "mouseTracker.h"
+#include <atomic>
 
 #define SLEEP_DURATION 20 // ms
 
+HHOOK hHook = NULL;
+// Global Hool Data
+std::atomic<int> scrollDelta(0);
+//Windows Mouse Proc 
+LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
+{
+    if (nCode == HC_ACTION && wParam == WM_MOUSEWHEEL)
+    {
+        MSLLHOOKSTRUCT* pMouse = (MSLLHOOKSTRUCT*)lParam;
+
+        // Extract wheel delta from mouseData (HIWORD)
+        short delta = GET_WHEEL_DELTA_WPARAM(pMouse->mouseData);
+
+        scrollDelta += delta; // accumulate scroll
+        // std::cout << "Scroll delta: " << delta << " | Total: " << scrollDelta << std::endl;
+    }
+
+    return CallNextHookEx(hHook, nCode, wParam, lParam);
+}
+
+
+void MessagePump(){
+    // ini ada bug, HInstance, hHook , etc harus dalam 1 fungsi kalau gk ngelag gk tau kenapa
+    MSG msg;
+    HINSTANCE hInstance = GetModuleHandle(NULL);
+    hHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, hInstance, 0);
+    while (GetMessage(&msg, NULL, 0, 0))
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+}
+
+void startHook(){
+
+    std::thread eventPump(MessagePump);
+    eventPump.detach();
+}
+
 // Poll the mouse and push to capture only on change
 void PollMouseWindows(MouseCapture& cap) {
+    //start hook untuk event mouse yang butuh hook
+    startHook();
+
     POINT prevPos = { -1, -1 };
     bool prevLeft = false, prevRight = false, prevMiddle = false;
-    short prevWheel = 0;
 
     while (true) {
         POINT pos;
@@ -23,29 +65,28 @@ void PollMouseWindows(MouseCapture& cap) {
 
         // Wheel tracking
         short wheelNow = HIWORD(GetAsyncKeyState(VK_MBUTTON)); // or track WM_MOUSEWHEEL in a real window
-        int dScroll = wheelNow - prevWheel;
+  
 
         int dx = pos.x - prevPos.x;
         int dy = pos.y - prevPos.y;
+        int dz = scrollDelta.exchange(0);
 
         // Only push if there is a change
         // if (dx != 0 || dy != 0 || leftNow != prevLeft || rightNow != prevRight
         //     || middleNow != prevMiddle || dScroll != 0) {
 
-        cap.push(dx, dy, dScroll, leftNow, rightNow, middleNow);
+        cap.push(dx, dy, dz, leftNow, rightNow, middleNow);
 
         prevPos = pos;
         prevLeft = leftNow;
         prevRight = rightNow;
         prevMiddle = middleNow;
-        prevWheel = wheelNow;
         
-        std::cout<<"dx: "<<dx<<" dy: "<<dy<<std::endl;
+        // std::cout<<"dx: "<<dx<<" dy: "<<dy<<" dz: "<<dz<<std::endl;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_DURATION));
     }
 }
-
 
 void WinApplyMouseState(const MouseState& state, MouseState& prevState) {
     INPUT input = {0};
@@ -63,7 +104,7 @@ void WinApplyMouseState(const MouseState& state, MouseState& prevState) {
     if (state.dScroll != 0) {
         input.mi = {};
         input.type = INPUT_MOUSE;
-        input.mi.mouseData = state.dScroll * WHEEL_DELTA; // 1 = 120 units
+        input.mi.mouseData = state.dScroll ; // 1 = 120 units
         input.mi.dwFlags = MOUSEEVENTF_WHEEL;
         SendInput(1, &input, sizeof(INPUT));
     }
@@ -105,14 +146,17 @@ void WinApplyMouseState(const MouseState& state, MouseState& prevState) {
 
     // --- Middle click ---
     if (state.midClick != prevState.midClick) {
-        input.mi = {};
-        input.type = INPUT_MOUSE;
-        input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
-        SendInput(1, &input, sizeof(INPUT));
-
-        input.mi = {};
-        input.type = INPUT_MOUSE;
-        input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
-        SendInput(1, &input, sizeof(INPUT));
+        if (state.midClick == 1){
+            input.mi = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+            SendInput(1, &input, sizeof(INPUT));
+        }else{
+            input.mi = {};
+            input.type = INPUT_MOUSE;
+            input.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+            SendInput(1, &input, sizeof(INPUT));
+        }
+        prevState.midClick = state.midClick;
     }
 }

@@ -1,13 +1,14 @@
+#include "MulticastServer.h"
 #include "server.h"
 #include <thread>
 #include "mouseTracker.h"
-#include "MulticastServer.h"
+
 int startTrackServer(){
     MouseCapture *capture = MouseCapture::GetInstance();
-
     std::thread poller(PollMouseWindows, std::ref(*capture));
     poller.detach(); // run polling in background
-
+    startHook();
+    std::thread t(MessagePump);
      try {
         asio::io_context io_context;
 

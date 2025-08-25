@@ -11,9 +11,13 @@ void formatMouseData(MouseState &mState, uint8_t *buf, int len) {
     buf[0] = MOUSE_ACTION;
 
     if (mState.dx != 0 ||  mState.dy != 0){
-        buf[1] = MOUSE_MOVE;        
+        buf[1] |= MOUSE_MOVE;        
         memcpy(buf + 4, &mState.dx, sizeof(mState.dx));   // x
         memcpy(buf + 8, &mState.dy, sizeof(mState.dy));   // y
+    }
+    if (mState.dScroll !=0 ){
+        buf[1] |= MOUSE_SCROLL;
+        memcpy(buf + 12, &mState.dScroll, sizeof(mState.dScroll));  // z   
     }
     
     if (mState.leftClick) buf[1] |= MOUSE_LEFT_CLICK;
@@ -21,8 +25,7 @@ void formatMouseData(MouseState &mState, uint8_t *buf, int len) {
     if (mState.midClick) buf[1] |= MOUSE_MID_CLICK;
 
     // Assuming mState has int x, y, z
-
-    // memcpy(buf + 12, &mState.dScroll, sizeof(mState.dScroll));  // z   
+    
 }
 
 void parseMouseData(MouseState &mState, const uint8_t *buf, int len) {
@@ -52,7 +55,7 @@ void parseMouseData(MouseState &mState, const uint8_t *buf, int len) {
     if ( (subOp & MOUSE_MID_CLICK) == MOUSE_MID_CLICK) mState.midClick = true;
 
     // Scroll (if used)
-    if (subOp == MOUSE_SCROLL) {
+    if ( (subOp & MOUSE_SCROLL) == MOUSE_SCROLL) {
         memcpy(&mState.dScroll, buf + 12, sizeof(mState.dScroll));
     }
 }
