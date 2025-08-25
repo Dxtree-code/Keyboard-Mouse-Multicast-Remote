@@ -1,9 +1,23 @@
 #include "serializer.hpp"
-
+#include <iostream>
 void clearBuff(uint8_t *buf, int len ){
     for (int i=0; i<len; i++){
         buf[i]= 0x00;
     }
+}
+
+bool isMouseData(uint8_t *buf, int len){
+    if (buf[0] == MOUSE_ACTION){
+        return true;
+    }
+    return false;
+}
+
+bool isKeyboardData(uint8_t *buf, int len){
+    if (buf[0] == KEYBOARD_ACTION){
+        return true;
+    }
+    return false;
 }
 
 void formatMouseData(MouseState &mState, uint8_t *buf, int len) {
@@ -24,11 +38,19 @@ void formatMouseData(MouseState &mState, uint8_t *buf, int len) {
     if (mState.rightClick) buf[1] |= MOUSE_RIGHT_CLICK;
     if (mState.midClick) buf[1] |= MOUSE_MID_CLICK;
 
-    // Assuming mState has int x, y, z
     
 }
 
 void parseMouseData(MouseState &mState, const uint8_t *buf, int len) {
+    
+    uint8_t opCode = buf[0];
+
+    // DEBUG
+    if (opCode != MOUSE_ACTION){
+        std::cout<<"opCode incorrect for mouse action"<<std::endl;
+        return;
+    }
+
     // Reset all fields first
     mState.dx = 0;
     mState.dy = 0;
@@ -36,9 +58,6 @@ void parseMouseData(MouseState &mState, const uint8_t *buf, int len) {
     mState.leftClick = false;
     mState.rightClick = false;
     mState.midClick = false;
-
-    // Operation code (currently unused)
-    uint8_t opCode = buf[0];
 
     // Sub-operation code
     uint8_t subOp = buf[1];
@@ -58,4 +77,37 @@ void parseMouseData(MouseState &mState, const uint8_t *buf, int len) {
     if ( (subOp & MOUSE_SCROLL) == MOUSE_SCROLL) {
         memcpy(&mState.dScroll, buf + 12, sizeof(mState.dScroll));
     }
+}
+
+void formatKeyboardData(KeyboardState &kState, uint8_t *buf, int len){
+    clearBuff(buf, len);
+    buf[0] |= KEYBOARD_ACTION;
+    if (kState.press){
+        buf[1] |= KEYBOARD_KEYDOWN;
+    }
+    // karena keyboard down 0x00, skip aja kalau memang down
+    memcpy(buf+4, &kState.code, sizeof(kState.code));  // x
+}
+
+
+
+
+void parseKeyboardData(KeyboardState &kState, const uint8_t *buf, int len){
+    uint8_t opCode = buf[0];
+
+    // DEBUG
+    if (opCode != MOUSE_ACTION){
+        std::cout<<"opCode incorrect for mouse action"<<std::endl;
+        return;
+    }
+    
+    if ( (buf[1] & KEYBOARD_KEYDOWN) == KEYBOARD_KEYDOWN){
+        kState.press = 1;
+        memcpy(&kState.code, buf+4, sizeof(kState.code));
+    }else{
+        // temporary: buat sementara pake else dulu karena simple
+        kState.press = 0;
+        memcpy(&kState.code, buf+4, sizeof(kState.code));
+    }
+
 }
