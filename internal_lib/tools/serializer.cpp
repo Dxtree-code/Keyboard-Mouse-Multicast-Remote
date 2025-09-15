@@ -20,6 +20,13 @@ bool isKeyboardData(uint8_t *buf, int len){
     return false;
 }
 
+bool isCommandData(uint8_t *buf, int len){
+    if (buf[0] == SystemCommand::STOP){
+        return true;
+    }
+    return false;
+}
+
 void formatMouseData(MouseState &mState, uint8_t *buf, int len) {
     clearBuff(buf, len);
     buf[0] = MOUSE_ACTION;
@@ -90,8 +97,6 @@ void formatKeyboardData(KeyboardState &kState, uint8_t *buf, int len){
 }
 
 
-
-
 void parseKeyboardData(KeyboardState &kState, const uint8_t *buf, int len){
     kState.code =0;
     kState.press =0;
@@ -112,4 +117,26 @@ void parseKeyboardData(KeyboardState &kState, const uint8_t *buf, int len){
         memcpy(&kState.code, buf+4, sizeof(kState.code));
     }
 
+}
+
+
+// data should be 4 array int 
+SystemCommand parseCommandData(int *data, const uint8_t *buf, int len){
+    if (buf[0]== SystemCommand::STOP){
+        // extract ip from int data;
+        data[0] = (int)buf[4];
+        data[1] = (int)buf[5];
+        data[2] = (int)buf[6];
+        data[3] = (int)buf[7];
+        return SystemCommand::STOP;
+    }
+}
+
+void formatStopCommandData(uint8_t *buf, int len, int ip[4]){
+    clearBuff(buf, len);
+    buf[0]|SystemCommand::STOP;
+    buf[4] = (uint8_t) ip[0];
+    buf[5] = (uint8_t) ip[1];
+    buf[6] = (uint8_t) ip[2];
+    buf[7] = (uint8_t) ip[3];
 }

@@ -2,41 +2,48 @@
 #include <thread>
 
 
-int startTrackServer(){
+
+TrackServer *TrackServer::instance = nullptr;
+TrackServer::TrackServer(std::string multicast_address, int multicast_port){
+    this->kCapture = KeyboardCapture::GetInstance();
+    this->capture = MouseCapture::GetInstance();
+    this->server = new UdpMulticastServer(this->io_context, this->multicast_address, this->multicast_port);
+ }
+
+int TrackServer::startTrackServer(){
 
     // start mouse capture
-    MouseCapture *capture = MouseCapture::GetInstance();
     std::thread poller(PollMouseWindows, std::ref(*capture));
     poller.detach(); // run polling in background
 
     startHook();
     std::thread t(MessagePump);
 
-
-    // get and start keyboard Tracker
-    KeyboardCapture *kCapture = KeyboardCapture::GetInstance();
     std::thread trackKey(startKeyboardTrack);
     trackKey.detach();
 
      try {
-        asio::io_context io_context;
-
-        // Configure server
-        std::string multicast_address = "10.22.65.108";
-        unsigned short multicast_port = 12345;
-
-        UdpMulticastServer server(io_context, multicast_address, multicast_port);
-
         // Run the sending loop
         std::thread mouseSend([&]() {
-            server.send_loop(10, capture);
+            this->server->send_loop(10, capture);
         });
         mouseSend.detach();
-        server.send_loop(10, kCapture);
+        this->server->send_loop(10, kCapture);
 
     } catch (std::exception& e) {
         std::cerr << "Exception: " << e.what() << std::endl;
     }
 
     return 0;
+}
+
+TrackServer *TrackServer::getInstance(){
+    return TrackServer::instance;
+}
+
+
+void TrackServer::sendStopSignal(int ip[4]){
+    uint8_t buf[16] = {};
+    formatStopCommandData(buf, 16, ip);
+    this->server->send_command(buf, 16);
 }

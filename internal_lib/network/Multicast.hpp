@@ -26,6 +26,7 @@ struct UdpMulticastServer {
 
     void send_loop(int interval_seconds, MouseCapture * mouseCapture);
     void send_loop(int interval_seconds, KeyboardCapture * KeyboardCapture);
+    void send_command(uint8_t *data, int len);
 };
 
 
@@ -42,14 +43,18 @@ struct UdpMultiCastClient{
         multicast_address(asio::ip::make_address(multicast_ip)){
 
         // Allow multiple clients to bind to the same port
-        // socket.set_option(asio::ip::udp::socket::reuse_address(true));
+        socket.set_option(asio::ip::udp::socket::reuse_address(true));
         std::cout<<"try to bind:"<<multicast_address<<std::endl;
         socket.bind(listen_endpoint);
 
         // Join multicast group
-        // socket.set_option(asio::ip::multicast::join_group(multicast_address));
+        socket.set_option(asio::ip::multicast::join_group(multicast_address));
     }
 
-     void listen_loop();    
-       
+     void listen_loop();   
 };
+
+std::string getHostname();
+
+
+bool has_ip(int ip_arr[4]);

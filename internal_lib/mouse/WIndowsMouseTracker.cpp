@@ -67,8 +67,9 @@ void PollMouseWindows(MouseCapture& cap) {
         short wheelNow = HIWORD(GetAsyncKeyState(VK_MBUTTON)); // or track WM_MOUSEWHEEL in a real window
   
 
-        int dx = pos.x - prevPos.x;
-        int dy = pos.y - prevPos.y;
+        // Ini namanya diganti
+        int dx = pos.x;
+        int dy = pos.y;
         int dz = scrollDelta.exchange(0);
 
         // Only push if there is a change
@@ -96,7 +97,7 @@ void WinApplyMouseState(const MouseState& state, MouseState& prevState) {
     if (state.dx != 0 || state.dy != 0) {
         input.mi.dx = state.dx;
         input.mi.dy = state.dy;
-        input.mi.dwFlags = MOUSEEVENTF_MOVE;
+        input.mi.dwFlags = MOUSEEVENTF_MOVE|MOUSEEVENTF_ABSOLUTE;
         SendInput(1, &input, sizeof(INPUT));
     }
 

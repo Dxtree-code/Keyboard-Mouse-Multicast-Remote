@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include "../mouse/Mouse.hpp"
 #include "../keyboard/Keyboard.hpp"
+#include "../system/system.hpp"
 //Operation Codes
 #define MOUSE_ACTION        0x01 
 #define KEYBOARD_ACTION     0x02
@@ -32,6 +33,8 @@ bool isMouseData(uint8_t *buf, int len);
 
 bool isKeyboardData(uint8_t *buf, int len);
 
+bool isCommandData(uint8_t *buf, int len);
+
 //ConvertFunction MouseState To Byte
 void formatMouseData(MouseState &mState, uint8_t *buf, int len);
 
@@ -41,3 +44,7 @@ void parseMouseData(MouseState &mState, const uint8_t *buf, int len);
 void formatKeyboardData(KeyboardState &kState, uint8_t *buf, int len);
 
 void parseKeyboardData(KeyboardState &kState, const uint8_t *buf, int len);
+
+SystemCommand parseCommandData(int *data, const uint8_t *buf, int len);
+
+void formatStopCommandData(uint8_t *buf, int len, int ip[4]);
