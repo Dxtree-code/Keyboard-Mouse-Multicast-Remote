@@ -11,11 +11,8 @@ struct TrackServer{
     UdpMulticastServer * server;
     std::string multicast_address;
     int multicast_port;
-    
-    static TrackServer *instance; 
 
     int startTrackServer();
-    static TrackServer* getInstance();
     TrackServer(std::string multicast_address, int multicast_port);
     
     void sendStopSignal(int ip[4]);

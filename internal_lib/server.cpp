@@ -1,9 +1,6 @@
 #include "internal_lib.hpp"
 #include <thread>
 
-
-
-TrackServer *TrackServer::instance = nullptr;
 TrackServer::TrackServer(std::string multicast_address, int multicast_port){
     this->kCapture = KeyboardCapture::GetInstance();
     this->capture = MouseCapture::GetInstance();
@@ -37,9 +34,6 @@ int TrackServer::startTrackServer(){
     return 0;
 }
 
-TrackServer *TrackServer::getInstance(){
-    return TrackServer::instance;
-}
 
 
 void TrackServer::sendStopSignal(int ip[4]){
