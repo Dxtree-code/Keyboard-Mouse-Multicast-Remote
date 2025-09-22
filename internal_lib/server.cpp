@@ -1,26 +1,28 @@
 #include "internal_lib.hpp"
 #include <thread>
+#include <stdio.h>
+TrackServer::TrackServer(std::string multicast_address, int multicast_port) {
+    std::cout << "Initializing Track Server" << std::endl;
+    this->multicast_address = multicast_address; // Assign the parameter to the class member
+    this->multicast_port = multicast_port;       // Assign the parameter to the class member
 
-TrackServer::TrackServer(std::string multicast_address, int multicast_port){
     this->kCapture = KeyboardCapture::GetInstance();
     this->capture = MouseCapture::GetInstance();
     this->server = new UdpMulticastServer(this->io_context, this->multicast_address, this->multicast_port);
- }
+}
 
 int TrackServer::startTrackServer(){
-
-    // start mouse capture
-    std::thread poller(PollMouseWindows, std::ref(*capture));
+    std::thread poller(PollMouseWindows, std::ref(*this->capture));
     poller.detach(); // run polling in background
 
     startHook();
     std::thread t(MessagePump);
+    t.detach(); 
 
     std::thread trackKey(startKeyboardTrack);
     trackKey.detach();
 
      try {
-        // Run the sending loop
         std::thread mouseSend([&]() {
             this->server->send_loop(10, capture);
         });

@@ -1,0 +1,1 @@
+ar rcs libcor.a build/*.o

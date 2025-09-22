@@ -1,11 +1,7 @@
 #include "internal_lib/internal_lib.hpp"
-
-
+#include "internal_lib/extern.hpp"
 int main() {
-    std::string ip = "239.255.0.1";
-    int port = 12345;
-    TrackServer server(ip, port);
-    // startTrackServer();
-    // server.startTrackServer();
+    // printf("aaaaaaaaaaaaaa");
+    // startSiomayServerC();
     return 0;
 }

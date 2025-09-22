@@ -134,7 +134,7 @@ SystemCommand parseCommandData(int *data, const uint8_t *buf, int len){
 
 void formatStopCommandData(uint8_t *buf, int len, int ip[4]){
     clearBuff(buf, len);
-    buf[0]|SystemCommand::STOP;
+    buf[0] |=SystemCommand::STOP;
     buf[4] = (uint8_t) ip[0];
     buf[5] = (uint8_t) ip[1];
     buf[6] = (uint8_t) ip[2];

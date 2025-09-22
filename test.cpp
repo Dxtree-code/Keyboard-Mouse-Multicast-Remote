@@ -1,6 +1,6 @@
-#include "internal_lib/tools/serializer.hpp"
-#include <iostream>
 
+#include <iostream>
+#include  "internal_lib/network/Multicast.hpp"
 using namespace std;
 
 
@@ -51,6 +51,12 @@ void test2(){
     }
     cout<<endl;
 }
+
+
+void test3(){
+    int arr[4] = {10,22,65,104};
+    std::cout<<has_ip(arr)<<std::endl;
+}
 int main(){
-    test2();
+    test3();
 }
