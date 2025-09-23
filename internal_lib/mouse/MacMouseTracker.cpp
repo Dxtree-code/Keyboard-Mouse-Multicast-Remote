@@ -26,8 +26,9 @@ void PollMouseMac(MouseCapture& cap) {
         CFRelease(event);
 
         // Detect button state (using event source)
-        bool leftNow   = CGEventSourceKeyState(kCGEventSourceStateCombinedSessionState,
-                                               kVK_Command); // approximate
+bool leftNow   = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState,
+                                          kCGMouseButtonLeft);
+
         bool rightNow  = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState,
                                                   kCGMouseButtonRight);
         bool middleNow = CGEventSourceButtonState(kCGEventSourceStateCombinedSessionState,
