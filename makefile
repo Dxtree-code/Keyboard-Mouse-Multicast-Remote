@@ -16,7 +16,7 @@ ifeq ($(UNAME_S),Linux)
 endif
 
 ifeq ($(UNAME_S),Darwin)  # macOS
-    LDFLAGS =
+    LDFLAGS = -framework CoreFoundation -framework CoreGraphics -framework ApplicationServices
 endif
 
 ifeq ($(OS),Windows_NT)   # Windows (MinGW or similar)
@@ -58,4 +58,4 @@ $(BUILD_FOLDER)/%.o: %.cpp | $(BUILD_FOLDER)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BUILD_FOLDER):
-	mk
+	mkdir -p $(BUILD_FOLDER)
