@@ -29,14 +29,14 @@ void  UdpMultiCastClient::listen_loop() {
                 //               << ", right=" << mState.rightClick
                 //               << ", mid=" << mState.midClick
                 //               << std::endl;
-                WinApplyMouseState(mState, prevMState);
+                MacApplyMouseState(mState, prevMState);
             }else if (isKeyboardData(data, 16)){
                 parseKeyboardData(kState, data, 16);
                 // std::cout
                 //     << "isKeyDown=" << kState.press 
                 //     << ", code=" << kState.code
                 //     << std::endl;
-                WinApplyKeyInput(kState.press, kState.code );
+                MacApplyKeyInput(kState.press, kState.code );
             }else if (isCommandData(data, 16)){
                 int ipdata[4]= {0};
                 SystemCommand cmd = parseCommandData(ipdata, data, 16);

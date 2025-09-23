@@ -104,3 +104,37 @@ void MacApplyMouseState(const MouseState& state, MouseState& prevState) {
         prevState.midClick = state.midClick;
     }
 }
+CGEventRef scrollCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon) {
+    if (type == kCGEventScrollWheel) {
+        int64_t delta = CGEventGetIntegerValueField(event, kCGScrollWheelEventDeltaAxis1);
+        std::cout << "Scroll delta: " << delta << std::endl;
+    }
+    return event;
+}
+void startHook() {
+    CGEventMask mask = CGEventMaskBit(kCGEventScrollWheel);
+    CFMachPortRef eventTap = CGEventTapCreate(
+        kCGHIDEventTap,
+        kCGHeadInsertEventTap,
+        kCGEventTapOptionDefault,
+        mask,
+        scrollCallback,
+        nullptr
+    );
+
+    if (!eventTap) {
+        std::cerr << "Failed to create event tap" << std::endl;
+        return;
+    }
+
+    CFRunLoopSourceRef runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, eventTap, 0);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, kCFRunLoopCommonModes);
+    CGEventTapEnable(eventTap, true);
+
+    CFRunLoopRun(); // acts like MessagePump
+}
+
+void MessagePump() {
+    // On macOS, startHook already runs a CFRunLoop
+    startHook();
+}

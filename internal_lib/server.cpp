@@ -12,7 +12,7 @@ TrackServer::TrackServer(std::string multicast_address, int multicast_port) {
 }
 
 int TrackServer::startTrackServer(){
-    std::thread poller(PollMouseWindows, std::ref(*this->capture));
+    std::thread poller(PollMouseMac, std::ref(*this->capture));
     poller.detach(); // run polling in background
 
     startHook();
