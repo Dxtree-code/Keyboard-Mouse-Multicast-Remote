@@ -6,7 +6,7 @@
 #include "MouseTracker.hpp"
 #include <atomic>
 
-#define SLEEP_DURATION 20 // ms
+#define SLEEP_DURATION 10 // ms
 
 HHOOK hHook = NULL;
 // Global Hool Data
