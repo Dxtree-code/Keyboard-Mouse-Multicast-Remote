@@ -7,7 +7,7 @@
 #include "Mouse.hpp"
 #include "MouseTracker.hpp"
 
-#define SLEEP_DURATION 20 // ms
+#define SLEEP_DURATION 10 // ms
 
 // Global state for scroll wheel deltas
 std::atomic<int> scrollDelta(0);
