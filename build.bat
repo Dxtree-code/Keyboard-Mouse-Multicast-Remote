@@ -1,1 +1,1 @@
-ar rcs libcor.a build/*.o
+ar rcs libcormac.a build/*.o
