@@ -41,13 +41,11 @@ $(BUILD_FOLDER)/main_server.exe: $(OBJSS) | $(BUILD_FOLDER)
 $(BUILD_FOLDER)/main_client.exe: $(OBJSC) | $(BUILD_FOLDER)
 	$(CC) $(CFLAGS) $(INCLUDES) $^ -o $@ ${LDFLAGS}
 
-
 $(BUILD_FOLDER)/%.o: %.cpp | $(BUILD_FOLDER)
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
 $(BUILD_FOLDER):
 	mkdir "$(BUILD_FOLDER)/"
-
 
 echo:
 	@echo "${SRCSS}"

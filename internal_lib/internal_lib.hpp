@@ -2,19 +2,18 @@
 #include "./network/Multicast.hpp"
 #include "./mouse/Mouse.hpp"
 
-
-
-struct TrackServer{
+struct TrackServer
+{
     MouseCapture *capture;
     KeyboardCapture *kCapture;
     asio::io_context io_context;
-    UdpMulticastServer * server;
+    NetInputSender *server;
     std::string multicast_address;
     int multicast_port;
 
     int startTrackServer();
     TrackServer(std::string multicast_address, int multicast_port);
-    
+
     void sendStopSignal(int ip[4]);
 };
 

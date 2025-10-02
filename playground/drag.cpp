@@ -13,19 +13,19 @@ void MouseDrag(int startX, int startY, int endX, int endY, int steps = 20)
     SendInput(1, &inputDown, sizeof(INPUT));
 
     // Calculate incremental movement
-    double dx = (endX - startX) / (double)steps;
-    double dy = (endY - startY) / (double)steps;
+    double x = (endX - startX) / (double)steps;
+    double y = (endY - startY) / (double)steps;
 
     for (int i = 1; i <= steps; i++)
     {
-        int x = startX + (int)(dx * i);
-        int y = startY + (int)(dy * i);
+        int x = startX + (int)(x * i);
+        int y = startY + (int)(y * i);
 
         INPUT inputMove = {0};
         inputMove.type = INPUT_MOUSE;
         inputMove.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
-        inputMove.mi.dx = (x * 65535) / GetSystemMetrics(SM_CXSCREEN); // normalize to 0–65535
-        inputMove.mi.dy = (y * 65535) / GetSystemMetrics(SM_CYSCREEN);
+        inputMove.mi.x = (x * 65535) / GetSystemMetrics(SM_CXSCREEN); // normalize to 0–65535
+        inputMove.mi.y = (y * 65535) / GetSystemMetrics(SM_CYSCREEN);
         SendInput(1, &inputMove, sizeof(INPUT));
 
         Sleep(10); // small delay fowr smooth dragging
@@ -40,7 +40,7 @@ void MouseDrag(int startX, int startY, int endX, int endY, int steps = 20)
 
 int main()
 {
-    Sleep(5000); // give 2 seconds to switch to target window
+    Sleep(5000);                   // give 2 seconds to switch to target window
     MouseDrag(100, 100, 500, 500); // drag from (100,100) to (500,500)
     return 0;
 }

@@ -2,6 +2,7 @@
 #include "Mouse.hpp"
 #include "windows.h"
 
+//This a function to poll windows mouse position and click state
 void PollMouseWindows(MouseCapture& cap);
 
 extern HHOOK hHook;

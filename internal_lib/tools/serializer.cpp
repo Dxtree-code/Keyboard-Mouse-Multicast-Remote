@@ -1,5 +1,8 @@
 #include "serializer.hpp"
 #include <iostream>
+
+// This is provide function to convert struct to byte or vice versa
+// Mapping of Operation code used provided in mapping.xlsx
 void clearBuff(uint8_t *buf, int len ){
     for (int i=0; i<len; i++){
         buf[i]= 0x00;
@@ -31,10 +34,10 @@ void formatMouseData(MouseState &mState, uint8_t *buf, int len) {
     clearBuff(buf, len);
     buf[0] = MOUSE_ACTION;
 
-    if (mState.dx != 0 ||  mState.dy != 0){
+    if (mState.x != 0 ||  mState.y != 0){
         buf[1] |= MOUSE_MOVE;        
-        memcpy(buf + 4, &mState.dx, sizeof(mState.dx));   // x
-        memcpy(buf + 8, &mState.dy, sizeof(mState.dy));   // y
+        memcpy(buf + 4, &mState.x, sizeof(mState.x));   // x
+        memcpy(buf + 8, &mState.y, sizeof(mState.y));   // y
     }
     if (mState.dScroll !=0 ){
         buf[1] |= MOUSE_SCROLL;
@@ -59,8 +62,8 @@ void parseMouseData(MouseState &mState, const uint8_t *buf, int len) {
     }
 
     // Reset all fields first
-    mState.dx = 0;
-    mState.dy = 0;
+    mState.x = 0;
+    mState.y = 0;
     mState.dScroll = 0;
     mState.leftClick = false;
     mState.rightClick = false;
@@ -71,8 +74,8 @@ void parseMouseData(MouseState &mState, const uint8_t *buf, int len) {
 
     // Movement
     if ( (subOp & MOUSE_MOVE) == MOUSE_MOVE) {
-        memcpy(&mState.dx, buf + 4, sizeof(mState.dx));
-        memcpy(&mState.dy, buf + 8, sizeof(mState.dy));
+        memcpy(&mState.x, buf + 4, sizeof(mState.x));
+        memcpy(&mState.y, buf + 8, sizeof(mState.y));
     }
 
     // Clicks

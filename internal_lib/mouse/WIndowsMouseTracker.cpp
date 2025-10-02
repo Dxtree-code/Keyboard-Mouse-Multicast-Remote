@@ -2,14 +2,17 @@
 #include <thread>
 #include <chrono>
 #include <windows.h>
-#include "Mouse.hpp"
-#include "MouseTracker.hpp"
 #include <atomic>
 
-#define SLEEP_DURATION 10 // ms
+#include "Mouse.hpp"
+#include "MouseTracker.hpp"
+#include "../config.hpp"
 
+
+
+// Global Hook Data -> this is hook to record mouse scroll
 HHOOK hHook = NULL;
-// Global Hool Data
+
 std::atomic<int> scrollDelta(0);
 //Windows Mouse Proc 
 LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
@@ -18,11 +21,9 @@ LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
     {
         MSLLHOOKSTRUCT* pMouse = (MSLLHOOKSTRUCT*)lParam;
 
-        // Extract wheel delta from mouseData (HIWORD)
-        short delta = GET_WHEEL_DELTA_WPARAM(pMouse->mouseData);
+        int delta = GET_WHEEL_DELTA_WPARAM(pMouse->mouseData);
 
-        scrollDelta += delta; // accumulate scroll
-        // std::cout << "Scroll delta: " << delta << " | Total: " << scrollDelta << std::endl;
+        scrollDelta += delta;
     }
 
     return CallNextHookEx(hHook, nCode, wParam, lParam);
@@ -47,7 +48,7 @@ void startHook(){
 }
 
 // Poll the mouse and push to capture only on change
-// ini mausikin cap kedalam rada redundant soalnya cap itu singleton
+// Polling method used instead event hook in order to limiting the rate of event recorded
 void PollMouseWindows(MouseCapture& cap) {
     //start hook untuk event mouse yang butuh hook
     startHook();
@@ -66,25 +67,22 @@ void PollMouseWindows(MouseCapture& cap) {
         // Wheel tracking
         short wheelNow = HIWORD(GetAsyncKeyState(VK_MBUTTON)); // or track WM_MOUSEWHEEL in a real window
   
-
-        // Ini namanya diganti
-        int dx = pos.x;
-        int dy = pos.y;
+        int x = pos.x;
+        int y = pos.y;
         int dz = scrollDelta.exchange(0);
 
-        if (dx != prevPos.x || dy != prevPos.y|| leftNow != prevLeft || rightNow != prevRight
+        if (x != prevPos.x || y != prevPos.y|| leftNow != prevLeft || rightNow != prevRight
             || middleNow != prevMiddle || dz != 0) {
 
-            cap.push(dx, dy, dz, leftNow, rightNow, middleNow);
+            cap.push(x, y, dz, leftNow, rightNow, middleNow);
 
             prevPos = pos;
             prevLeft = leftNow;
             prevRight = rightNow;
             prevMiddle = middleNow;
         }
-        // std::cout<<"dx: "<<dx<<" dy: "<<dy<<" dz: "<<dz<<std::endl;
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(SLEEP_DURATION));
+        std::this_thread::sleep_for(std::chrono::milliseconds(MOUSE_POLL_RATE));
     }
 }
 
@@ -93,16 +91,16 @@ void WinApplyMouseState(const MouseState& state, MouseState& prevState) {
     input.type = INPUT_MOUSE;
 
     // --- Move mouse relative ---
-    if (state.dx != 0 || state.dy != 0) {
-    input.mi = {};
-    input.type = INPUT_MOUSE;
-    input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
+    if (state.x != 0 || state.y != 0) {
+        input.mi = {};
+        input.type = INPUT_MOUSE;
+        input.mi.dwFlags = MOUSEEVENTF_MOVE | MOUSEEVENTF_ABSOLUTE;
 
-    input.mi.dx = (state.dx * 65535) / GetSystemMetrics(SM_CXSCREEN);
-    input.mi.dy = (state.dy * 65535) / GetSystemMetrics(SM_CYSCREEN);
+        input.mi.dx = (state.x * 65535) / GetSystemMetrics(SM_CXSCREEN);
+        input.mi.dy = (state.y * 65535) / GetSystemMetrics(SM_CYSCREEN);
 
-    SendInput(1, &input, sizeof(INPUT));
-}
+        SendInput(1, &input, sizeof(INPUT));
+    }
 
     // --- Scroll wheel ---
     if (state.dScroll != 0) {

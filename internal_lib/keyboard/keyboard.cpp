@@ -5,6 +5,8 @@ void KeyboardState::setKeyboardState(KeyboardState &s, bool press, int code){
     s.code = code;
 }
 
+// This is Cilcular Queue Implementation:
+// 
 bool KeyboardStateQueue::push( bool press, int code){
     if (this->count == KEYBOARD_STATE_BUFFER){
         return false;

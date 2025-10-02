@@ -1,10 +1,10 @@
 #include"Mouse.hpp"
 
-void MouseState::SetState(MouseState & container,int dx, int dy, int dscroll,
+void MouseState::SetState(MouseState & container,int x, int y, int dscroll,
                   bool lClick, bool rClick, bool midClick)
 {
-    container.dx = dx;
-    container.dy = dy;
+    container.x = x;
+    container.y = y;
     container.dScroll = dscroll;
     container.leftClick = lClick;
     container.rightClick = rClick;

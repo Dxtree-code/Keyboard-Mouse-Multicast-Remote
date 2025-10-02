@@ -2,18 +2,20 @@
 // biar gk duplicate codenya. karena yang sekarang hardcode dan duplicate
 
 #pragma once 
-#define KEYBOARD_STATE_BUFFER 256
-
+#include<memory>
 
 #include "KeyboardWindows.h"
-#include<memory>
-struct KeyboardState{
-    bool press; // 0 key up, 1 key down
-    int code ; // keycode, key apa yang ditekan
+#include "../config.hpp"
 
-    static void setKeyboardState(KeyboardState &s, bool press, int code);
+// A struct to save keyboard state changes per key
+struct KeyboardState{
+    bool press; // key state: 0 key up, 1 key down
+    int code ; // code of pressed key
+
+    inline static void setKeyboardState(KeyboardState &s, bool press, int code);
 };
 
+// an implementation of cilcular queue; -> used in KeyboardCapture
 struct KeyboardStateQueue{
     private:
         KeyboardState keyboardStateArr[KEYBOARD_STATE_BUFFER] = {};
@@ -30,7 +32,10 @@ struct KeyboardStateQueue{
     inline bool isFull() const { return count == KEYBOARD_STATE_BUFFER; };
 };
 
-struct KeyboardCapture {
+// This is an Object used for communication between HOOK or Information Capture with Thread that has Responsibility to send data;
+// This Should ONLY USED IN SPSC (Single Producer Single Consumer) MODEL.
+// Some data might NOT BUFFERED if The BUFFER FULL, then check the config and increase the size
+class KeyboardCapture {
     private:
         static std::unique_ptr<KeyboardCapture> instance;
         KeyboardStateQueue queue;
@@ -44,7 +49,6 @@ struct KeyboardCapture {
         inline bool poll(KeyboardState &outState) {
             return queue.pop(outState);
         }
-
 };
 
 
