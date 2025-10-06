@@ -9,7 +9,7 @@ TrackServer::TrackServer(std::string multicast_address, int multicast_port)
 
     this->kCapture = KeyboardCapture::GetInstance();
     this->capture = MouseCapture::GetInstance();
-    this->server = new NetInputSender(this->io_context, this->multicast_address, this->multicast_port);
+    this->server = new NetSenderHandler(this->io_context, this->multicast_address, this->multicast_port);
 }
 
 int TrackServer::startTrackServer()

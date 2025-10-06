@@ -15,9 +15,10 @@ struct MouseState
     bool rightClick = false;
     bool leftClick = false;
 
-    inline static void SetState(MouseState &container, int x, int y, int dscroll,
+    static void SetState(MouseState &container, int x, int y, int dscroll,
                                 bool lClick, bool rClick, bool midClick);
 };
+
 
 // an implementation of cilcular queue; -> used in MouseCapture
 struct MouseStateQueue

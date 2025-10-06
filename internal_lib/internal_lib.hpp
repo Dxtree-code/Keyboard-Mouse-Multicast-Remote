@@ -7,7 +7,7 @@ struct TrackServer
     MouseCapture *capture;
     KeyboardCapture *kCapture;
     asio::io_context io_context;
-    NetInputSender *server;
+    NetSenderHandler *server;
     std::string multicast_address;
     int multicast_port;
 

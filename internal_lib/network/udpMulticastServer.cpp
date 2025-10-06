@@ -2,7 +2,7 @@
 
 // INI SANGAT GK BAGUS, BUAT KEJAR DEADLINE, DI OVERLOAD AJA DULU,
 // NANTI VU BENERIN BIAR BAGUS, MAU PAKE CALLBACK ATAU APA TERSERAH
-void NetInputSender::send_loop(int interval_ms, MouseCapture *mouseCapture)
+void NetSenderHandler::send_loop(int interval_ms, MouseCapture *mouseCapture)
 {
     MouseState state;
     uint8_t buf[16] = {};
@@ -25,7 +25,7 @@ void NetInputSender::send_loop(int interval_ms, MouseCapture *mouseCapture)
     }
 }
 
-void NetInputSender::send_loop(int interval_ms, KeyboardCapture *keyboardCapture)
+void NetSenderHandler::send_loop(int interval_ms, KeyboardCapture *keyboardCapture)
 {
     KeyboardState state;
     uint8_t buf[16] = {};
@@ -51,7 +51,7 @@ void NetInputSender::send_loop(int interval_ms, KeyboardCapture *keyboardCapture
     }
 }
 
-void NetInputSender::send_command(uint8_t *data, int len)
+void NetSenderHandler::send_command(uint8_t *data, int len)
 {
     asio::error_code ec;
     socket.send_to(asio::buffer(data, len), multicast_endpoint, 0, ec);

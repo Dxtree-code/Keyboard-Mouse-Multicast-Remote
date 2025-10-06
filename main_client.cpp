@@ -3,5 +3,5 @@
 #include <string>
 #include "internal_lib/extern.hpp"
 int main(){
-    startClientC(); 
+    startClient("239.255.0.1", 8080);
 }

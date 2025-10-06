@@ -5,8 +5,8 @@ void startClient(std::string listenAddr, int port)
 
     try
     {
-        NetClientReceiver client(io_context, listenAddr, port);
-        client.listen_loop();
+        NetClientHandler client(io_context, listenAddr, port);
+        client.start_process();
     }
     catch (std::exception &e)
     {
