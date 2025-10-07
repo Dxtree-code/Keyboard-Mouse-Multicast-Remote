@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-
+#include <atomic>
 #include "../config.hpp"
 
 // A struct to save mouse position and click action
@@ -27,16 +27,18 @@ private:
     MouseState mouseStateArr[MOUSE_STATE_BUFFER] = {};
     int head = 0;
     int tail = 0;
-    int count = 0;
+    std::atomic<int> count{0};
 
-public:
-    bool push(int x, int y, int dScroll,
-              bool leftClick, bool rightClick, bool midClick);
+    
+    public:
+        MouseStateQueue();
+        bool push(int x, int y, int dScroll,
+                bool leftClick, bool rightClick, bool midClick);
 
-    bool pop(MouseState &outState);
+        bool pop(MouseState &outState);
 
-    inline bool isEmpty() const { return count == 0; };
-    inline bool isFull() const { return count == MOUSE_STATE_BUFFER; };
+        inline bool isEmpty() const { return count == 0; };
+        inline bool isFull() const { return count.load(std::memory_order_acquire) == MOUSE_STATE_BUFFER; };
 };
 
 // This is an Object used for communication between HOOK or Information Capture with Thread that has Responsibility to send data;
@@ -47,8 +49,8 @@ struct MouseCapture
 private:
     static std::unique_ptr<MouseCapture> instance;
     MouseStateQueue queue;
-
 public:
+    MouseCapture();
     static MouseCapture *GetInstance();
     inline bool push(int x, int y, int dScroll, bool left, bool right, bool mid)
     {

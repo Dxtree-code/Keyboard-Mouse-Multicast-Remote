@@ -75,6 +75,7 @@ void PollMouseWindows(MouseCapture& cap) {
             || middleNow != prevMiddle || dz != 0) {
 
             cap.push(x, y, dz, leftNow, rightNow, middleNow);
+            std::cout<<"scroll: "<<dz<<std::endl;
 
             prevPos = pos;
             prevLeft = leftNow;
@@ -106,7 +107,8 @@ void WinApplyMouseState(const MouseState& state, MouseState& prevState) {
     if (state.dScroll != 0) {
         input.mi = {};
         input.type = INPUT_MOUSE;
-        input.mi.mouseData = state.dScroll ; // 1 = 120 units
+        std::cout<<"Scroll: "<<state.dScroll<<std::endl;
+        input.mi.mouseData = state.dScroll; // 1 = 120 units
         input.mi.dwFlags = MOUSEEVENTF_WHEEL;
         SendInput(1, &input, sizeof(INPUT));
     }

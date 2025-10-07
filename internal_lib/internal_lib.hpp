@@ -1,6 +1,7 @@
 #pragma once
 #include "./network/Multicast.hpp"
 #include "./mouse/Mouse.hpp"
+#include "./config.hpp"
 
 struct TrackServer
 {

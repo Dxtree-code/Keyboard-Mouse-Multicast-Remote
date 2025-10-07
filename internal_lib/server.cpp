@@ -27,9 +27,9 @@ int TrackServer::startTrackServer()
     try
     {
         std::thread mouseSend([&]()
-                              { this->server->send_loop(5, capture); });
+                              { this->server->send_loop(SERVER_SEND_RATE, capture); });
         mouseSend.detach();
-        this->server->send_loop(10, kCapture);
+        this->server->send_loop(5, kCapture);
     }
     catch (std::exception &e)
     {
