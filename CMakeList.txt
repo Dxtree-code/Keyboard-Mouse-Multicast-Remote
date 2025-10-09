@@ -1,7 +1,0 @@
-project(
-    Siomay VERSION 0.5
-    DESCRIPTION "Multicast Input Server & Client"
-    LANGUAGES CXX
-)
-
-add_library(server )

@@ -1,24 +1,23 @@
 #include "internal_lib.hpp"
 #include <thread>
 #include <stdio.h>
+
+//Change to use member initilaizer;
 TrackServer::TrackServer(std::string multicast_address, int multicast_port)
 {
     std::cout << "Initializing Track Server" << std::endl;
-    this->multicast_address = multicast_address; // Assign the parameter to the class member
-    this->multicast_port = multicast_port;       // Assign the parameter to the class member
-
     this->kCapture = KeyboardCapture::GetInstance();
     this->capture = MouseCapture::GetInstance();
-    this->server = new NetSenderHandler(this->io_context, this->multicast_address, this->multicast_port);
+    this->server = new NetSenderHandler(this->io_context, multicast_address, multicast_port);
 }
 
 int TrackServer::startTrackServer()
 {
-    std::thread poller(PollMouseWindows, std::ref(*this->capture));
+    thread poller(PollMouseWindows, std::ref(*this->capture));
     poller.detach(); // run polling in background
 
     startHook();
-    std::thread t(MessagePump);
+    thread t(MessagePump);
     t.detach();
 
     std::thread trackKey(startKeyboardTrack);
@@ -26,8 +25,7 @@ int TrackServer::startTrackServer()
 
     try
     {
-        std::thread mouseSend([&]()
-                              { this->server->send_loop(SERVER_SEND_RATE, capture); });
+        std::thread mouseSend([&](){ this->server->send_loop(SERVER_SEND_RATE, capture); });
         mouseSend.detach();
         this->server->send_loop(5, kCapture);
     }

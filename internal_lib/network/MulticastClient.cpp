@@ -8,14 +8,14 @@ void NetClientHandler::listen_loop()
     std::array<uint8_t, RECV_DATA_LEN> recv_buffer;
     asio::ip::udp::endpoint sender_endpoint;
 
+    this->isRunning.store(true, std::memory_order_release);
     try
     {
-        while (this->isRunning.load(std::memory_order_relaxed))
+        while (this->isRunning.load(std::memory_order_acquire))
         {
             size_t bytes_received = socket.receive_from(asio::buffer(recv_buffer), sender_endpoint);
             uint8_t * data = recv_buffer.data();
-            dataBuffer.push( data, bytes_received);
-
+            this->dataBuffer.push( data, bytes_received);
         }
     }
     catch (std::exception &e)
@@ -24,76 +24,70 @@ void NetClientHandler::listen_loop()
     }
 }
 
-void NetClientHandler::executor_loop(){
-     // TO DO: Create function recv ( uint8_t, bytes_received) {Do Something}
-    MouseState mState;
-    MouseState prevMState;
+// void NetClientHandler::executor_loop(){
+//      // TO DO: Create function recv ( uint8_t, bytes_received) {Do Something}
+//     MouseState mState;
+//     MouseState prevMState;
 
-    KeyboardState kState;
-    while(this->isRunning.load(std::memory_order_relaxed)){
-        NetRecvData  * netData =  this->dataBuffer.pop();
-        if(netData  ==  nullptr) continue;
+//     KeyboardState kState;
+//     while(this->isRunning.load(std::memory_order_relaxed)){
+//         NetRecvData  * netData =  this->dataBuffer.pop();
+//         if(netData  ==  nullptr) continue;
 
-        uint8_t * data; 
-        int dataLen  = netData->getData(&data);
+//         uint8_t * data; 
+//         int dataLen  = netData->getData(&data);
 
-        if (isMouseData(data, 16))
-        {
-            parseMouseData(mState, data, dataLen);
-            WinApplyMouseState(mState, prevMState);
-        }
-        else if (isKeyboardData(data, dataLen))
-        {
-            parseKeyboardData(kState, data, dataLen);
-            WinApplyKeyInput(kState.press, kState.code);
-        }
-        else if (isCommandData(data, 16))
-        {
-            int ipdata[4] = {0};
-            SystemCommand cmd = parseCommandData(ipdata, data, 16);
+//         if (isMouseData(data, 16))
+//         {
+//             parseMouseData(mState, data, dataLen);
+//             WinApplyMouseState(mState, prevMState);
+//         }
+//         else if (isKeyboardData(data, dataLen))
+//         {
+//             parseKeyboardData(kState, data, dataLen);
+//             WinApplyKeyInput(kState.press, kState.code);
+//         }
+//         else if (isCommandData(data, 16))
+//         {
+//             int ipdata[4] = {0};
+//             SystemCommand cmd = parseCommandData(ipdata, data, 16);
 
-            if (cmd == SystemCommand::STOP)
-            {
-                if (has_ip(ipdata))
-                {
-                    this->isRunning.store(false, std::memory_order_relaxed);
-                }
-            }
-        }
-    }
-}
+//             if (cmd == SystemCommand::STOP)
+//             {
+//                 if (has_ip(ipdata))
+//                 {
+//                     this->isRunning.store(false, std::memory_order_relaxed);
+//                 }
+//             }
+//         }
+//     }
+// }
 
-void NetClientHandler::start_process(){
-    //initializing listen_loop and executor loop
-    this->listenThread = std::thread([this](){
-        this->listen_loop();
-    });
+// void NetClientHandler::start_process(){
+//     //initializing listen_loop and executor loop
+//     this->listenThread = std::thread([this](){
+//         this->listen_loop();
+//     });
 
-    this->exectThread = std::thread([this](){
-        this->executor_loop();
-    });
+//     this->exectThread = std::thread([this](){
+//         this->executor_loop();
+//     });
 
-    if (this->listenThread.joinable()){
-        this->listenThread.join();
-    }
-    if (this->exectThread.joinable()){
-        this->exectThread.join();
-    }
+//     if (this->listenThread.joinable()){
+//         this->listenThread.join();
+//     }
+//     if (this->exectThread.joinable()){
+//         this->exectThread.join();
+//     }
 
-}   
+// }   
 
-void NetClientHandler::stop_process(){
+void NetClientHandler::stop(){
     this->isRunning.store(false, std::memory_order_relaxed);
-    if (this->listenThread.joinable()){
-        this->listenThread.join();
-    }
-    if (this->exectThread.joinable()){
-        this->exectThread.join();
-    }
 }
 
 NetClientHandler::~NetClientHandler()
 {
-    stop_process(); // ensure all threads are joined
+    stop();
     socket.close();
 }
