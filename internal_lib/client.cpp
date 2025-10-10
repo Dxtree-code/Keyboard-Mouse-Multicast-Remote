@@ -35,7 +35,6 @@ void ListenerClient::startClient(){
 
 
 void ListenerClient::startExecutor(){
-     // TO DO: Create function recv ( uint8_t, bytes_received) {Do Something}
     MouseState mState;
     MouseState prevMState;
 
