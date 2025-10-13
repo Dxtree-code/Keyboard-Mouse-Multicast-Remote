@@ -13,6 +13,7 @@ void NetClientHandler::listen_loop()
     {
         while (this->isRunning.load(std::memory_order_acquire))
         {
+
             size_t bytes_received = socket.receive_from(asio::buffer(recv_buffer), sender_endpoint);
             uint8_t * data = recv_buffer.data();
             this->dataBuffer.push( data, bytes_received);
@@ -25,7 +26,8 @@ void NetClientHandler::listen_loop()
 }
 
 void NetClientHandler::stop(){
-    this->isRunning.store(false, std::memory_order_relaxed);
+    this->isRunning.store(false, std::memory_order_release);
+    this->socket.close();
 }
 
 NetClientHandler::~NetClientHandler()

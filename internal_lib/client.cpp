@@ -4,7 +4,18 @@
 ListenerClient::ListenerClient(string listenAddress, int port):
     io_context(),
     dataBuffer(),
-    netClient(io_context, listenAddress, port, dataBuffer)
+    netClient(io_context, listenAddress, port, dataBuffer),
+    lifeLimit(Clock::now() + std::chrono::seconds(10))
+{
+
+}
+
+ListenerClient::ListenerClient(string listenAddress, int port, int lifeDur):
+    io_context(),
+    dataBuffer(),
+    netClient(io_context, listenAddress, port, dataBuffer),
+    lifeDuration(lifeDur),
+    lifeLimit(Clock::now() + std::chrono::seconds(lifeDur))
 {
 
 }
@@ -24,7 +35,11 @@ void ListenerClient::startClient(){
     this->executorThread =  thread([&](){
         this->startExecutor();
     });
+}
 
+void ListenerClient::stopClient(){
+    this->netClient.stop();
+    this->isRunning.store(false, std::memory_order_release);
     if (this->executorThread.joinable()){
         this->executorThread.join();
     }
@@ -33,6 +48,20 @@ void ListenerClient::startClient(){
     }
 }
 
+void ListenerClient::wait(){
+    while (this->isRunning.load(std::memory_order_relaxed)){
+        TimePoint now =  Clock::now();
+        if (this->hasNewData.load(std::memory_order_relaxed)){
+            this->hasNewData.store(false, std::memory_order_relaxed);
+            this->lifeLimit = Clock::now() + std::chrono::seconds(this->lifeDuration);
+        }
+        if (this->lifeLimit < now){
+            this->isRunning = false;
+            this->stopClient();
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(this->lifeDuration-2));
+    }
+}
 
 void ListenerClient::startExecutor(){
     MouseState mState;
@@ -42,6 +71,7 @@ void ListenerClient::startExecutor(){
     while(this->isRunning.load(std::memory_order_acquire)){
         NetRecvData  * netData =  this->dataBuffer.pop();
         if(netData  ==  nullptr) continue;
+        this->hasNewData.store(true, std::memory_order_release);
 
         uint8_t * data; 
         int dataLen  = netData->getData(&data);

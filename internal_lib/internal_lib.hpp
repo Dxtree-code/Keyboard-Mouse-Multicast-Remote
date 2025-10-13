@@ -10,6 +10,8 @@ using std::atomic;
 using std::cout;
 using std::endl;
 
+
+
 struct TrackServer
 {
     MouseCapture *capture;
@@ -24,6 +26,9 @@ struct TrackServer
 };
 
 struct ListenerClient{
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef std::chrono::time_point<Clock> TimePoint;
+
     asio::io_context io_context;
     NetReceiverBuffer dataBuffer;
     NetClientHandler netClient;
@@ -32,11 +37,16 @@ struct ListenerClient{
     thread executorThread;
 
     atomic<bool> isRunning = false;
+    atomic<bool>  hasNewData = false;
     
+    int lifeDuration=0; // in second;
+    TimePoint lifeLimit;
     ListenerClient(string listenAddress, int port);
+    ListenerClient(string listenAddress, int port, int lifeDuration);
     void startListener();
     void startExecutor();
+
     void startClient();
+    void wait(); // wait all thread to stop and help handle time limit to live
     void stopClient();
 };
-void startClient();
