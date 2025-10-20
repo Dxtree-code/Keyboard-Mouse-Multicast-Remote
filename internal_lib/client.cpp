@@ -99,6 +99,7 @@ void ListenerClient::startExecutor(){
             {
                 if (has_ip(ipdata))
                 {
+                    cout<<"Receive stop signal"<<endl;
                     this->isRunning.store(false, std::memory_order_release);
                 }
             }
