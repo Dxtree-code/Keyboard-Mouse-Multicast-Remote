@@ -61,6 +61,7 @@ void ListenerClient::wait(){
         }
         std::this_thread::sleep_for(std::chrono::seconds(this->lifeDuration-2));
     }
+    this->stopClient();
 }
 
 void ListenerClient::startExecutor(){

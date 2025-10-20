@@ -1,6 +1,5 @@
 #pragma once
-#include "internal_lib.hpp"
-extern TrackServer* instance;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
