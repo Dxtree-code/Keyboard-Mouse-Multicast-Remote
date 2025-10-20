@@ -1,1 +1,1 @@
-ar rcs libcor.a build/*.o
+powershell -c "ar rcs libcor.a $(Get-ChildItem build\*.o | ForEach-Object { $_.FullName })"
