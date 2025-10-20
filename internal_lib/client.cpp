@@ -59,7 +59,7 @@ void ListenerClient::wait(){
             this->isRunning = false;
             this->stopClient();
         }
-        std::this_thread::sleep_for(std::chrono::seconds(this->lifeDuration-2));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     this->stopClient();
 }
