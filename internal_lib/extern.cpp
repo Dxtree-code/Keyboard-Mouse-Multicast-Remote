@@ -17,6 +17,7 @@ void sendStopCommandC(int ip[4]){
 }
 
 void  startClientC(){
-    ListenerClient client("239.255.0.1", 8080);
+    ListenerClient client("239.255.0.1", 8080, 5400);
     client.startClient();
+    client.wait();
 }
