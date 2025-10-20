@@ -9,3 +9,5 @@
 #define RECV_DATA_LEN 1024 // Max len of byte data to received
 
 #define RECV_BUFFER_LEN 1024
+
+#define WAIT_CHECKING_RATE 1 //s

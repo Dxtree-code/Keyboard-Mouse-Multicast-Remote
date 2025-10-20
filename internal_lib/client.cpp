@@ -49,18 +49,21 @@ void ListenerClient::stopClient(){
 }
 
 void ListenerClient::wait(){
-    while (this->isRunning.load(std::memory_order_relaxed)){
+    while (this->isRunning.load(std::memory_order_acquire)){
         TimePoint now =  Clock::now();
-        if (this->hasNewData.load(std::memory_order_relaxed)){
-            this->hasNewData.store(false, std::memory_order_relaxed);
+        if (this->hasNewData.load(std::memory_order_acquire)){
+            this->hasNewData.store(false, std::memory_order_release);
             this->lifeLimit = Clock::now() + std::chrono::seconds(this->lifeDuration);
         }
         if (this->lifeLimit < now){
             this->isRunning = false;
             this->stopClient();
         }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        cout<<"Sleeping"<<endl;
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_CHECKING_RATE));
+        cout<<"Wake"<<endl;
     }
+    cout<<"Stopping"<<endl;
     this->stopClient();
 }
 
