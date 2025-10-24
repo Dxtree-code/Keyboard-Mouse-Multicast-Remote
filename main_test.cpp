@@ -1,8 +1,8 @@
 
 #include <iostream>
-// #include "internal_lib/network/Multicast.hpp"
-#include<windows.h>
-#include "internal_lib/system/system.hpp"
+// #include "src/network/Multicast.hpp"
+#include <windows.h>
+#include "src/system/system.hpp"
 using namespace std;
 
 // void test1(){
@@ -58,25 +58,25 @@ using namespace std;
 // void test3()
 // {
 //     int arr[4] = {10, 22, 65, 104};
-//     std::cout << has_ip(arr) << std::endl;
+//     std::cout << hasIp(arr) << std::endl;
 // }
-
 
 // void test4(){
 //     // CilcularQueue<MouseState, 255> queue;
 //     // // queue.push();
 // }
-void test5(){
-    DisplaySetting  s;
-    std::cout<<"changing"<<std::endl;
+void test5()
+{
+    DisplaySetting s;
+    std::cout << "changing" << std::endl;
     s.changeDisplaySetting(1920, 1080, 0);
     Sleep(10000);
     s.revertDisplaySetting();
-    std::cout<<"done"<<std::endl;
+    std::cout << "done" << std::endl;
 }
 int main()
 {
     test5();
- 
-    std::cout<<"end";
+
+    std::cout << "end";
 }

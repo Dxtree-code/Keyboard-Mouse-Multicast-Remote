@@ -1,7 +1,7 @@
 
 #include <iostream>
-#include "internal_lib/network/Multicast.hpp"
-#include "internal_lib/tools/datstruct.hpp"
+#include "src/network/Multicast.hpp"
+#include "src/tools/datstruct.hpp"
 using namespace std;
 
 // void test1(){
@@ -57,11 +57,11 @@ void test2()
 void test3()
 {
     int arr[4] = {10, 22, 65, 104};
-    std::cout << has_ip(arr) << std::endl;
+    std::cout << hasIp(arr) << std::endl;
 }
 
-
-void test4(){
+void test4()
+{
     CilcularQueue<MouseState, 255> queue;
 
     // queue.push();
