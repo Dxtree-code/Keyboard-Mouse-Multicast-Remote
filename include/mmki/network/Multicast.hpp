@@ -9,11 +9,11 @@
 #include <atomic>
 
 #include "asio.hpp"
-#include "../config.hpp"
-#include "../mouse/Mouse.hpp"
-#include "../keyboard/keyboard.hpp"
-#include "../tools/serializer.hpp"
-#include "../mouse/MouseTracker.hpp"
+#include "mmki/config.hpp"
+#include "mmki/mouse/Mouse.hpp"
+#include "mmki/keyboard/keyboard.hpp"
+#include "mmki/tools/serializer.hpp"
+#include "mmki/mouse/mouse_capture.hpp
 
 // A structure to provide facade to send input / command to client
 // This used on Server

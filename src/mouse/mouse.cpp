@@ -1,12 +1,44 @@
-#include"mmki/mouse/Mouse.hpp"
+#include "mmki/mouse/mouse.hpp"
 
-void MouseState::setState(MouseState & container,int x, int y, int dscroll,
-                  bool lClick, bool rClick, bool midClick)
+
+#ifdef _WIN32
+#include "mmki/mouse/windows_mouse.hpp"
+#elif __APPLE__
+#include "MouseTrackerMac.h"
+#endif
+
+
+MouseTracker::MouseTracker():
+    isRunning(true)
 {
-    container.x = x;
-    container.y = y;
-    container.dScroll = dscroll;
-    container.leftClick = lClick;
-    container.rightClick = rClick;
-    container.midClick = midClick;
-};
+
+}
+MouseTracker::~MouseTracker() = default;
+
+MouseTracker& MouseTracker::getMouseTracker() {
+    #ifdef _WIN32
+        static MouseTrackerWindows instance;
+    #elif __APPLE__
+        static MouseTrackerMac instance;
+    #else
+        static MouseTracker instance; 
+    #endif
+        return instance;
+}
+
+void MouseTracker::setIsRunning(bool value){
+    this->isRunning = value;
+}
+
+bool MouseTracker::getIsRunning(){
+    return this->isRunning.load(std::memory_order_acquire);
+}
+
+MouseExecutor& MouseExecutor::getMouseExecutor(){
+    #ifdef _WIN32
+        static MouseExecutorWindows instance;
+    #elif __APPLE__
+
+    #endif
+    return instance;
+}
