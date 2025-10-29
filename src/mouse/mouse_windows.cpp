@@ -1,22 +1,35 @@
-#include "mmki/mouse/windows_mouse.hpp"
+#ifdef _WIN32
 
-// Global Hook Data -> this is hook to record mouse scroll
+#include "mmki/mouse/mouse_windows.hpp"
 
+MouseTrackerWindows::MouseTrackerWindows(){
+    proc = [this](int nCode, WPARAM wParam, LPARAM lParam)->LRESULT{
+        if (nCode == HC_ACTION && wParam == WM_MOUSEWHEEL)
+        {
+            MSLLHOOKSTRUCT *pMouse = (MSLLHOOKSTRUCT *)lParam;
+
+            int delta = GET_WHEEL_DELTA_WPARAM(pMouse->mouseData);
+            this->scrollDelta += delta;
+        }
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
+    };
+    this->procPtr = make_unique<Proc>(proc);
+}
+
+MouseTrackerWindows::~MouseTrackerWindows(){
+    // Cleanup if this proc is being used.
+    if(MouseTrackerWindows::procPtr.get() ==  &this->proc){
+        MouseTrackerWindows::procPtr.reset();
+    }
+}
 LRESULT CALLBACK MouseTrackerWindows::MouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
-    if (instance == nullptr)
-        return CallNextHookEx(nullptr, nCode, wParam, lParam);
-
-    if (nCode == HC_ACTION && wParam == WM_MOUSEWHEEL)
-    {
-
-        MSLLHOOKSTRUCT *pMouse = (MSLLHOOKSTRUCT *)lParam;
-
-        int delta = GET_WHEEL_DELTA_WPARAM(pMouse->mouseData);
-
-        instance->scrollDelta += delta;
+    if (MouseTrackerWindows::procPtr.get() == nullptr){
+        return CallNextHookEx(NULL, nCode, wParam, lParam);
     }
-    return CallNextHookEx(instance->hHook, nCode, wParam, lParam);
+    else{
+        return (*MouseTrackerWindows::procPtr.get())(nCode, wParam, lParam);
+    } 
 }
 
 void MouseTrackerWindows::messagePump()
@@ -24,7 +37,7 @@ void MouseTrackerWindows::messagePump()
     // HInstance, hHook, etc. must be in the same function, otherwise it lags (not sure why).
     MSG msg;
     HINSTANCE hInstance = GetModuleHandle(NULL);
-    this->hHook = SetWindowsHookEx(WH_MOUSE_LL, MouseProc, hInstance, 0);
+    this->hHook = SetWindowsHookEx(WH_MOUSE_LL, MouseTrackerWindows::MouseProc, hInstance, 0);
     while (GetMessage(&msg, NULL, 0, 0))
     {
         TranslateMessage(&msg);
@@ -32,7 +45,6 @@ void MouseTrackerWindows::messagePump()
     }
 }
 
-// Note: nanti di buat inline atau apalah di factory
 void MouseTrackerWindows::startHook()
 {
     std::thread eventPump(messagePump);
@@ -182,3 +194,5 @@ void MouseExecutor::executeMouse(MouseState &state){
         prevMouseState.midClick = state.midClick;
     }
 }
+
+#endif

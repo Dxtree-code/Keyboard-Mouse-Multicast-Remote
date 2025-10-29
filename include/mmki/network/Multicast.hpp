@@ -73,11 +73,12 @@ protected:
     std::atomic<bool> isRunning = true;
     // Constructor
 public:
-    NetClientHandler(asio::io_context &io, std::string &multicast_ip, int port, NetReceiverBuffer &dataBuffer) : io_context(io),
-                                                                                                                 socket(io_context, asio::ip::udp::v4()),
-                                                                                                                 listen_endpoint(asio::ip::udp::v4(), port),
-                                                                                                                 multicast_address(asio::ip::make_address(multicast_ip)),
-                                                                                                                 dataBuffer(dataBuffer)
+    NetClientHandler(asio::io_context &io, std::string &multicast_ip, int port, NetReceiverBuffer &dataBuffer) :
+        io_context(io),
+        socket(io_context, asio::ip::udp::v4()),
+        listen_endpoint(asio::ip::udp::v4(), port),
+        multicast_address(asio::ip::make_address(multicast_ip)),
+        dataBuffer(dataBuffer)
     {
         socket.set_option(asio::ip::udp::socket::reuse_address(true));
         socket.bind(listen_endpoint);

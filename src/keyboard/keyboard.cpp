@@ -1,37 +1,29 @@
 #include "mmki/keyboard/keyboard.hpp"
 
-void KeyboardState::setKeyboardState(KeyboardState &s, bool press, int code){
-    s.press =press;
-    s.code = code;
+KeyboardTracker::KeyboardTracker()
+    :isRunning(true)
+{
+
 }
 
-// This is Cilcular Queue Implementation:
-// 
-bool KeyboardStateQueue::push( bool press, int code){
-    if (this->count == KEYBOARD_STATE_BUFFER){
-        return false;
-    }
-    KeyboardState::setKeyboardState(this->keyboardStateArr[tail], press, code);
-    this->count++;
-    this->tail = (this->tail+1)%KEYBOARD_STATE_BUFFER;
-    return true;
+KeyboardTracker& KeyboardTracker::getKeyboardTracker(){
+    #ifdef _WIN32
+        static KeyboardTrackerWindows instance;
+    #else
+        throw std::runtime_error(
+            std::string("Unsupported platform: no valid \"KeyboardTracker\" implemented for this OS: ") +
+            __FILE__ + ":" + std::to_string(__LINE__) +
+            " in function " + __func__
+    );
+    #endif
+    return instance;
 }
 
-bool KeyboardStateQueue::pop(KeyboardState &outState){
-    if (this->count == 0){
-        return false;
-    }
-    outState = this->keyboardStateArr[this->head];
-    this->head = (this->head+1)%KEYBOARD_STATE_BUFFER;
-    this->count--;
-    return true;
+void KeyboardTracker::setIsRunning(bool value){
+    this->isRunning.store(value, std::memory_order_release);
 }
 
+bool KeyboardTracker::getIsRunning(){
 
-std::unique_ptr<KeyboardCapture> KeyboardCapture::instance = nullptr;
-KeyboardCapture * KeyboardCapture::GetInstance(){
-    if (!instance){
-        instance = std::make_unique<KeyboardCapture>(KeyboardCapture());
-    }
-    return instance.get();
+    return this->isRunning.load(std::memory_order_acquire);
 }

@@ -1,8 +1,7 @@
 #include "mmki/mouse/mouse.hpp"
 
-
 #ifdef _WIN32
-#include "mmki/mouse/windows_mouse.hpp"
+#include "mmki/mouse/mouse_windows.hpp"
 #elif __APPLE__
 #include "MouseTrackerMac.h"
 #endif
@@ -18,10 +17,12 @@ MouseTracker::~MouseTracker() = default;
 MouseTracker& MouseTracker::getMouseTracker() {
     #ifdef _WIN32
         static MouseTrackerWindows instance;
-    #elif __APPLE__
-        static MouseTrackerMac instance;
     #else
-        static MouseTracker instance; 
+        throw std::runtime_error(
+            std::string("Unsupported platform: no valid \"MouseTracker\" implemented for this OS: ") +
+            __FILE__ + ":" + std::to_string(__LINE__) +
+            " in function " + __func__
+        );
     #endif
         return instance;
 }
@@ -37,6 +38,7 @@ bool MouseTracker::getIsRunning(){
 MouseExecutor& MouseExecutor::getMouseExecutor(){
     #ifdef _WIN32
         static MouseExecutorWindows instance;
+        return instance;
     #elif __APPLE__
 
     #endif

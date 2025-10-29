@@ -1,3 +1,5 @@
+#ifdef _WIN32
+
 #pragma once
 
 #include <thread>
@@ -5,32 +7,33 @@
 #include <atomic>
 
 #include <windows.h>
+#include <memory>
+#include <functional>
+
 #include "mmki/mouse/mouse.hpp"
 #include "mmki/mouse/mouse_capture.hpp"
 
+using std::unique_ptr;
+using std::make_unique;
+using std::function;
 
+class MouseTrackerWindows : public MouseTracker{
 
-
-class MouseTrackerWindows : public MouseTracker
-{
     HHOOK hHook = NULL;
-    static inline MouseTrackerWindows *instance = nullptr;
+
+    typedef  function<LRESULT(int nCode, WPARAM wParam, LPARAM lParam)> Proc;
+    Proc proc;
+    static unique_ptr<Proc> procPtr;
+
     std::atomic<int> scrollDelta;
 
     static LRESULT CALLBACK MouseProc(int nCode, WPARAM wParam, LPARAM lParam);
+    
     void messagePump();
     void startHook();
 
-public:
-    static MouseTrackerWindows *getInstance()
-    {
-        if (instance == nullptr)
-        {
-            instance = new MouseTrackerWindows();
-        }
-        return instance;
-    }
-
+    public:
+    MouseTrackerWindows();
     void pollMouse(MouseCapture &cap) override;
     void stop() override;
 
@@ -40,3 +43,5 @@ public:
 class MouseExecutorWindows : public MouseExecutor{
     void executeMouse(MouseState &state) override;
 };
+
+#endif
