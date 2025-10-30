@@ -7,16 +7,17 @@
 #endif
 
 
-MouseTracker::MouseTracker():
-    isRunning(true)
+MouseTracker::MouseTracker(shared_ptr<MouseCapture> capturer):
+    isRunning(true),
+    capturer(capturer)
 {
 
 }
 MouseTracker::~MouseTracker() = default;
 
-MouseTracker& MouseTracker::getMouseTracker() {
+MouseTracker& MouseTracker::getMouseTracker(shared_ptr<MouseCapture> capturer) {
     #ifdef _WIN32
-        static MouseTrackerWindows instance;
+        static MouseTrackerWindows instance(capturer);
     #else
         throw std::runtime_error(
             std::string("Unsupported platform: no valid \"MouseTracker\" implemented for this OS: ") +

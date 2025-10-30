@@ -1,6 +1,20 @@
-#include "mmki/network/Multicast.hpp"
+#include "mmki/network/multicast_client.hpp"
 
 #include <thread>
+
+NetClientHandler::NetClientHandler(asio::io_context &io, std::string &multicast_ip, int port, NetBuffer &dataBuffer) : 
+    io_context(io),
+    socket(io_context, asio::ip::udp::v4()),
+    listen_endpoint(asio::ip::udp::v4(), port),
+    multicast_address(asio::ip::make_address(multicast_ip)),
+    dataBuffer(dataBuffer)
+{
+    socket.set_option(asio::ip::udp::socket::reuse_address(true));
+    socket.bind(listen_endpoint);
+
+    socket.set_option(asio::ip::multicast::join_group(multicast_address));
+}
+
 
 void NetClientHandler::listen_loop()
 {
@@ -19,7 +33,7 @@ void NetClientHandler::listen_loop()
     }
     catch (std::exception &e)
     {
-        std::cerr << "Receive error: " << e.what() << std::endl;
+        // std::cerr << "Receive error: " << e.what() << std::endl;
     }
 }
 

@@ -1,19 +1,21 @@
-#include "mmki/TrackServer.hpp"
-
-ListenerClient::ListenerClient(string listenAddress, int port) : io_context(),
-                                                                 dataBuffer(),
-                                                                 netClient(io_context, listenAddress, port, dataBuffer),
-                                                                 lifeLimit(Clock::now() + std::chrono::seconds(10))
-{
-}
+#include "mmki/listener_client.hpp"
+#include "mmki/tools/serializer.hpp"
+#include "mmki/keyboard/keyboard.hpp"
+#include "mmki/mouse/mouse.hpp"
+#include "mmki/network/helper.hpp"
+ListenerClient::ListenerClient(string listenAddress, int port) :
+    io_context(),
+    dataBuffer(),
+    netClient(io_context, listenAddress, port, dataBuffer),
+    lifeLimit(Clock::now() + std::chrono::seconds(10)){}
 
 ListenerClient::ListenerClient(string listenAddress, int port, int lifeDur) : io_context(),
-                                                                              dataBuffer(),
-                                                                              netClient(io_context, listenAddress, port, dataBuffer),
-                                                                              lifeDuration(lifeDur),
-                                                                              lifeLimit(Clock::now() + std::chrono::seconds(lifeDur))
-{
-}
+    dataBuffer(),
+    netClient(io_context, listenAddress, port, dataBuffer),
+    lifeDuration(lifeDur),
+    lifeLimit(Clock::now() + std::chrono::seconds(lifeDur)),
+    mousex(MouseExecutor::getMouseExecutor()),
+    keyboardx(KeyboardExecutor::getKeyboardExecutor()){}
 
 void ListenerClient::startListener()
 {
@@ -73,9 +75,10 @@ void ListenerClient::startExecutor()
     MouseState prevMState;
 
     KeyboardState kState;
+
     while (this->isRunning.load(std::memory_order_acquire))
     {
-        NetRecvData *netData = this->dataBuffer.pop();
+        NetData *netData = this->dataBuffer.pop();
         if (netData == nullptr)
             continue;
         this->hasNewData.store(true, std::memory_order_release);
@@ -86,12 +89,13 @@ void ListenerClient::startExecutor()
         if (isMouseData(data, 16))
         {
             parseMouseData(mState, data, dataLen);
-            winApplyMouseState(mState, prevMState);
+            this->mousex.executeMouse(mState);
+            // winApplyMouseState(mState, prevMState);
         }
         else if (isKeyboardData(data, dataLen))
         {
             parseKeyboardData(kState, data, dataLen);
-            WinApplyKeyInput(kState.press, kState.code);
+            this->keyboardx.executeKeyboard(kState);
         }
         else if (isCommandData(data, 16))
         {

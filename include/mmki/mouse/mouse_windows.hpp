@@ -33,8 +33,8 @@ class MouseTrackerWindows : public MouseTracker{
     void startHook();
 
     public:
-    MouseTrackerWindows();
-    void pollMouse(MouseCapture &cap) override;
+    MouseTrackerWindows(shared_ptr<MouseCapture> capturer);
+    void pollMouse() override;
     void stop() override;
 
     ~MouseTrackerWindows() override;

@@ -1,4 +1,6 @@
-#include "mmki/network/Multicast.hpp"
+#include "asio.hpp"
+
+#include "mmki/network/helper.hpp"
 
 std::string getHostname(){
     return asio::ip::host_name();
@@ -28,7 +30,7 @@ bool hasIp (int ip_arr[4]) {
             }
         }
     } catch (std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        // std::cerr << "Error: " << e.what() << std::endl;
     }
     return false;
 }

@@ -7,9 +7,11 @@
 // byte[8-11]  = data2 [y]
 // byte[12-15] = data3 [z]
 #include <stdint.h>
-#include "../mouse/Mouse.hpp"
-#include "../keyboard/Keyboard.hpp"
-#include "../system/system.hpp"
+
+#include "mmki/mouse/mouse.hpp"
+#include "mmki/keyboard/keyboard.hpp"
+#include "mmki/system/system.hpp"
+
 //Operation Codes
 #define MOUSE_ACTION        0x01 
 #define KEYBOARD_ACTION     0x02

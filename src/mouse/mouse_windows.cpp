@@ -2,7 +2,9 @@
 
 #include "mmki/mouse/mouse_windows.hpp"
 
-MouseTrackerWindows::MouseTrackerWindows(){
+MouseTrackerWindows::MouseTrackerWindows(shared_ptr<MouseCapture> capturer):
+    MouseTracker(capturer)
+{
     proc = [this](int nCode, WPARAM wParam, LPARAM lParam)->LRESULT{
         if (nCode == HC_ACTION && wParam == WM_MOUSEWHEEL)
         {
@@ -53,7 +55,7 @@ void MouseTrackerWindows::startHook()
 
 // Poll the mouse and push to capture only on change
 // Polling method used instead event hook in order to limiting the rate of event recorded
-void MouseTrackerWindows::pollMouse(MouseCapture &cap)
+void MouseTrackerWindows::pollMouse()
 {
     // Ensure the isRunning == true;
     this->setIsRunning(true);
@@ -79,7 +81,7 @@ void MouseTrackerWindows::pollMouse(MouseCapture &cap)
         if (x != prevPos.x || y != prevPos.y || leftNow != prevLeft || rightNow != prevRight || middleNow != prevMiddle || dz != 0)
         {
 
-            cap.push(x, y, dz, leftNow, rightNow, middleNow);
+            this->capturer->push(x, y, dz, leftNow, rightNow, middleNow);
 
             prevPos = pos;
             prevLeft = leftNow;
@@ -111,7 +113,7 @@ void MouseExecutor::executeMouse(MouseState &state){
     input.type = INPUT_MOUSE;
 
     // --- Move mouse relative ---
-    if (state.x != 0 || state.y != 0)
+    if (state.x != prevMouseState.x || state.y != prevMouseState.y)
     {
         input.mi = {};
         input.type = INPUT_MOUSE;
@@ -121,6 +123,9 @@ void MouseExecutor::executeMouse(MouseState &state){
         input.mi.dy = (state.y * 65535) / GetSystemMetrics(SM_CYSCREEN);
 
         SendInput(1, &input, sizeof(INPUT));
+        
+        prevMouseState.x = state.x;
+        prevMouseState.y =  state.y;
     }
 
     // --- Scroll wheel ---
