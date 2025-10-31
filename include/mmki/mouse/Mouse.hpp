@@ -19,8 +19,6 @@ class MouseTracker{
 
     public:
     virtual void pollMouse();
-    
-    static MouseTracker& getMouseTracker(shared_ptr<MouseCapture> capturer);// This function should return Child of MouseTracker, windows, or mac or other platform
 
     virtual ~MouseTracker();
 
@@ -36,7 +34,5 @@ class MouseExecutor{
 
     public:
     virtual void  executeMouse(MouseState &state);
-
-    static MouseExecutor& getMouseExecutor();
 };
 

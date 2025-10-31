@@ -20,6 +20,7 @@ MouseTrackerWindows::MouseTrackerWindows(shared_ptr<MouseCapture> capturer):
 
 MouseTrackerWindows::~MouseTrackerWindows(){
     // Cleanup if this proc is being used.
+    this->stop();
     if(MouseTrackerWindows::procPtr.get() ==  &this->proc){
         MouseTrackerWindows::procPtr.reset();
     }
@@ -36,7 +37,6 @@ LRESULT CALLBACK MouseTrackerWindows::MouseProc(int nCode, WPARAM wParam, LPARAM
 
 void MouseTrackerWindows::messagePump()
 {
-    // HInstance, hHook, etc. must be in the same function, otherwise it lags (not sure why).
     MSG msg;
     HINSTANCE hInstance = GetModuleHandle(NULL);
     this->hHook = SetWindowsHookEx(WH_MOUSE_LL, MouseTrackerWindows::MouseProc, hInstance, 0);
@@ -49,7 +49,7 @@ void MouseTrackerWindows::messagePump()
 
 void MouseTrackerWindows::startHook()
 {
-    std::thread eventPump(messagePump);
+    std::thread eventPump([this](){this->messagePump();});
     eventPump.detach();
 }
 
@@ -101,10 +101,6 @@ void MouseTrackerWindows::stop(){
         hHook = NULL;
     }
     PostQuitMessage(0);
-}
-
-MouseTrackerWindows::~MouseTrackerWindows(){
-    this->stop();
 }
 
 

@@ -3,6 +3,8 @@
 
 #include "mmki/track_server.hpp"
 #include "mmki/tools/serializer.hpp"
+#include "mmki/keyboard/keyboard_factory.hpp"
+#include "mmki/mouse/mouse_factory.hpp"
 
 using std::make_shared;
 // Change to use member initilaizer;
@@ -11,8 +13,8 @@ TrackServer::TrackServer(std::string multicast_address, int multicast_port):
     kCapture(make_shared<KeyboardCapture>()),
     io_context(),
     server(this->io_context, multicast_address, multicast_port),
-    mouseTracker(MouseTracker::getMouseTracker(mCapture)),
-    keyboardTracker(KeyboardTracker::getKeyboardTracker(kCapture))
+    mouseTracker(MouseFactory::getMouseTrackerByOs(mCapture)),
+    keyboardTracker(KeyboardFactory::getKeyboardTrackerByOs(kCapture))
 {
   
 }

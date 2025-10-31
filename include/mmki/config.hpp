@@ -1,3 +1,4 @@
+#pragma once
 constexpr int  KEYBOARD_STATE_BUFFER = 1024;
 
 constexpr int MOUSE_STATE_BUFFER = 1024;
@@ -10,4 +11,4 @@ constexpr int RECV_DATA_LEN = 1024;
 
 constexpr int RECV_BUFFER_LEN = 1024;
 
-constexpr int WAIT_CHECKING_RATE 1; //s
+constexpr int WAIT_CHECKING_RATE = 1; //s

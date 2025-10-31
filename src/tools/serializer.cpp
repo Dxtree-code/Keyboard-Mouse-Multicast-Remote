@@ -1,5 +1,4 @@
 #include "mmki/tools/serializer.hpp"
-#include <iostream>
 
 // This is provide function to convert struct to byte or vice versa
 // Mapping of Operation code used provided in mapping.xlsx

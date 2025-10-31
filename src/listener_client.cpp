@@ -3,6 +3,9 @@
 #include "mmki/keyboard/keyboard.hpp"
 #include "mmki/mouse/mouse.hpp"
 #include "mmki/network/helper.hpp"
+#include "mmki/mouse/mouse_factory.hpp"
+#include "mmki/keyboard/keyboard_factory.hpp"
+
 ListenerClient::ListenerClient(string listenAddress, int port) :
     io_context(),
     dataBuffer(),
@@ -14,8 +17,8 @@ ListenerClient::ListenerClient(string listenAddress, int port, int lifeDur) : io
     netClient(io_context, listenAddress, port, dataBuffer),
     lifeDuration(lifeDur),
     lifeLimit(Clock::now() + std::chrono::seconds(lifeDur)),
-    mousex(MouseExecutor::getMouseExecutor()),
-    keyboardx(KeyboardExecutor::getKeyboardExecutor()){}
+    mousex(MouseFactory::getMouseExecutorByOs()),
+    keyboardx(KeyboardFactory::getKeyboardExecutorByOs()){}
 
 void ListenerClient::startListener()
 {

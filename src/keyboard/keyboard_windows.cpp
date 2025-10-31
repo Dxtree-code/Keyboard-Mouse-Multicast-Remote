@@ -32,7 +32,7 @@ KeyboardTrackerWindows::KeyboardTrackerWindows(shared_ptr<KeyboardCapture> captu
                 break;
             }
         }
-        return CallNextHookEx(kHHook, nCode, wParam, lParam);
+        return CallNextHookEx(this->hhook, nCode, wParam, lParam);
     };
 
     this->setProcPtr(proc);
@@ -41,23 +41,22 @@ KeyboardTrackerWindows::KeyboardTrackerWindows(shared_ptr<KeyboardCapture> captu
 // This is windows hook used to record keyboard input, if there's keyboard input, push to KeyboardCapture
 // Full documentation of this hook: https://learn.microsoft.com/en-us/windows/win32/winmsg/about-hooks#wh_keyboard_ll
 // Or Just google it you should find better docs
-HHOOK kHHook;
 LRESULT CALLBACK KeyboardTrackerWindows::KeyboardProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
     if (KeyboardTrackerWindows::procPtr != nullptr){
         return (*KeyboardTrackerWindows::procPtr.get())(nCode, wParam, lParam);
     }
-    return CallNextHookEx(kHHook, nCode, wParam, lParam);
+    return CallNextHookEx(NULL, nCode, wParam, lParam);
 }
 
 // Wrapper function to start message pump
 // This should called on new thread
-void startKeyboardTrack()
+void KeyboardTrackerWindows::pollKeyboard()
 {
     HINSTANCE hInstance = GetModuleHandle(NULL);
 
-    kHHook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardTrackerWindows::KeyboardProc, hInstance, 0);
-    if (!kHHook)
+    this->hhook = SetWindowsHookEx(WH_KEYBOARD_LL, KeyboardTrackerWindows::KeyboardProc, hInstance, 0);
+    if (!this->hhook)
     {
         // std::cerr << "Failed to install hook!" << std::endl;
         return;
@@ -70,19 +69,19 @@ void startKeyboardTrack()
         DispatchMessage(&msg);
     }
 
-    UnhookWindowsHookEx(kHHook);
+    UnhookWindowsHookEx(this->hhook);
     return;
 }
 
 // This for winodws Client. To simulate requeted keyboard input on client machine
 // Full Docs: https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
-void WinApplyKeyInput(bool isKeyDown, int vkCode)
+void KeyboardExecutorWindows::executeKeyboard(KeyboardState &state)
 {
     INPUT input{};
     input.type = INPUT_KEYBOARD;
-    input.ki.wVk = static_cast<WORD>(vkCode);
+    input.ki.wVk = static_cast<WORD>(state.code);
     input.ki.wScan = 0;
-    input.ki.dwFlags = isKeyDown ? 0 : KEYEVENTF_KEYUP;
+    input.ki.dwFlags = state.press ? 0 : KEYEVENTF_KEYUP;
     input.ki.time = 0;
     input.ki.dwExtraInfo = GetMessageExtraInfo();
 

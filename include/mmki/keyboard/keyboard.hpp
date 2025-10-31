@@ -5,10 +5,6 @@
 #include <memory>
 #include "mmki/keyboard/keyboard_capture.hpp"
 
-#ifdef _WIN32
-#include "mmki/keyboard/keyboard_windows.hpp"
-#endif
-
 using std::shared_ptr;
 using std::atomic;
 
@@ -23,8 +19,6 @@ class KeyboardTracker{
     
     public:
     virtual void pollKeyboard() = 0;
-    
-    static KeyboardTracker& getKeyboardTracker(shared_ptr<KeyboardCapture> capturer);// This function should return Child of KeyboardTracker, windows, or mac or other platform
 
     virtual ~KeyboardTracker();
 
@@ -38,6 +32,4 @@ class KeyboardTracker{
 class KeyboardExecutor{
     public:
     virtual void executeKeyboard(KeyboardState &state);
-
-    static KeyboardExecutor& getKeyboardExecutor();
 };
