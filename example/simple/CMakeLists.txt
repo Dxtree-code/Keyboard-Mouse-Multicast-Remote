@@ -1,0 +1,3 @@
+add_executable(main_client main_client.cpp)
+target_link_libraries(mmki_lib PRIVATE)
+target_include_directories(main_client PRIVATE INCLUDES)
