@@ -123,8 +123,27 @@ void startHook() {
         nullptr
     );
 
+    // Try the privileged HID event tap first. If it fails (commonly due to
+    // missing Input Monitoring / Accessibility permission), try a less
+    // privileged session-level, listen-only tap as a fallback. The
+    // fallback may or may not be sufficient depending on macOS version
+    // and privacy settings.
     if (!eventTap) {
-        std::cerr << "Failed to create event tap" << std::endl;
+        std::cerr << "kCGHIDEventTap creation failed - trying kCGSessionEventTap (listen-only) as fallback" << std::endl;
+        eventTap = CGEventTapCreate(
+            kCGSessionEventTap,
+            kCGHeadInsertEventTap,
+            kCGEventTapOptionListenOnly,
+            mask,
+            scrollCallback,
+            nullptr
+        );
+    }
+
+    if (!eventTap) {
+        std::cerr << "Failed to create event tap. This usually means the process lacks permission to monitor input events." << std::endl;
+        std::cerr << "On macOS you must grant 'Input Monitoring' or 'Accessibility' permission to this app or to the Terminal/launcher you are using." << std::endl;
+        std::cerr << "Open System Settings -> Privacy & Security -> Input Monitoring (or Security & Privacy -> Privacy -> Accessibility on older macOS), add your app or Terminal, then restart the app/Terminal and try again." << std::endl;
         return;
     }
 
