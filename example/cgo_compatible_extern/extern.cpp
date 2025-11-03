@@ -1,6 +1,8 @@
 #include "extern.hpp"
-#include "mmki/TrackServer.hpp"
+#include "mmki/track_server.hpp"
+#include  "mmki/listener_client.hpp"
 
+#include <iostream>
 TrackServer *instance = nullptr;
 void startSiomayServerC()
 {
@@ -8,6 +10,7 @@ void startSiomayServerC()
     std::cout << "Try Starting Track Server" << std::endl;
     instance->startTrackServer();
     std::cout << "Track Server ended" << std::endl;
+    instance->wait();
     return;
 }
 

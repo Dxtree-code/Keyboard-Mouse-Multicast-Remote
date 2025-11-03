@@ -19,3 +19,5 @@ target_compile_options(mmki_lib PRIVATE -Wall)
 add_subdirectory(src)
 
 add_subdirectory(example/simple)
+
+add_subdirectory(example/cgo_compatible_extern)

@@ -1,10 +1,10 @@
 add_executable(main_client main_client.cpp)
 target_link_libraries(main_client PRIVATE mmki_lib ws2_32)
 target_include_directories(main_client PRIVATE ${INCLUDES})
-set_target_properties(main_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/example/")
+set_target_properties(main_client PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/example/simple")
 target_compile_definitions(main_client PRIVATE _WIN32_WINNT=0x0A00 )
 
 add_executable(main_server main_server.cpp)
 target_link_libraries(main_server PRIVATE mmki_lib ws2_32)
 target_include_directories(main_server PRIVATE ${INCLUDES})
-set_target_properties(main_server PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/example/")
+set_target_properties(main_server PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/example/simple")
