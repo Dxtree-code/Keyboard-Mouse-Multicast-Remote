@@ -5,6 +5,7 @@ target_sources(
     keyboard_state.cpp
     keyboard.cpp
     keyboard_windows.cpp
+    keyboard_mac.cpp
     keyboard_factory.cpp
 )
 

@@ -2,6 +2,9 @@
 
 #include "mmki/keyboard/keyboard.hpp"
 #include "mmki/keyboard/keyboard_windows.hpp"
+#ifdef __APPLE__
+#include "mmki/keyboard/keyboard_mac.hpp"
+#endif
 
 class KeyboardFactory{
 

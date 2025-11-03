@@ -1,35 +1,35 @@
-#ifdef  __APPLE__
+#ifdef __APPLE__
 #pragma once
-#include <iostream
-#include <chrono>
-#include <thread>
-#include <atomic>
-#include <memory>
 
 #include <CoreGraphics/CoreGraphics.h>
+#include <memory>
+#include <atomic>
 
-#include "mmki/mouse/mouse.hpp
+#include "mmki/mouse/mouse.hpp"
 #include "mmki/mouse/mouse_capture.hpp"
-#include "mmki/config.hpp"
 
+using std::shared_ptr;
 
-class MouseTrackerMac : public MouseTracker{
-    std::atomic<int> scrollDelta(0);
-    CGEventRef scrollCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon);
+class MouseTrackerMac : public MouseTracker {
+private:
+    std::atomic<int> scrollDelta{0};
+    CFMachPortRef eventTap = nullptr;
+    CFRunLoopSourceRef runLoopSource = nullptr;
+    
+    static CGEventRef scrollCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void* refcon);
     void startHook();
     
-    public:
-    MouseTrackerMac(shared_ptr<MouseCapture> capturer) 
-    void pollMouse() override;
-
-    void stop() override;
-
+public:
+    MouseTrackerMac(shared_ptr<MouseCapture> capturer);
     ~MouseTrackerMac();
-
+    
+    void pollMouse() override;
+    void stop() override;
 };
 
-class MouseExecutorMac: public MouseExecutor{
-    void executeMouse(MouseState & state) override
+class MouseExecutorMac : public MouseExecutor {
+public:
+    void executeMouse(MouseState& state) override;
 };
 
 #endif
