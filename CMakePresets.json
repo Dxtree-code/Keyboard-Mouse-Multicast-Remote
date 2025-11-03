@@ -1,0 +1,22 @@
+{
+    "version": 4,
+    "configurePresets": [
+        {
+            "name": "base",
+            "generator": "Ninja",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_C_COMPILER": "gcc"
+            }
+        },
+        {
+            "name": "debug",
+            "inherits": "base",
+            "binaryDir": "./build/debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ]
+ 
+}
