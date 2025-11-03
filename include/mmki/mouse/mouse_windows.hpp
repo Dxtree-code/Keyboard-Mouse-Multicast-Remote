@@ -37,7 +37,7 @@ class MouseTrackerWindows : public MouseTracker{
     void pollMouse() override;
     void stop() override;
 
-    ~MouseTrackerWindows() override;
+    ~MouseTrackerWindows();
 };
 
 class MouseExecutorWindows : public MouseExecutor{

@@ -3,17 +3,25 @@
 #include "mmki/network/multicast_server.hpp"
 #include "mmki/tools/serializer.hpp"
 
+void NetServerHandler::setIsRunning(bool value){
+    this->isRunning.store(value, std::memory_order_release);
+}
+bool NetServerHandler::getIsRunning(){
+    return this->isRunning.load(std::memory_order_acquire);
+}
 NetServerHandler::NetServerHandler(asio::io_context &io, const std::string &address,unsigned short port):
         io_context(io),
         socket(io_context, asio::ip::udp::v4()),
-        multicast_endpoint(asio::ip::make_address(address), port){}
+        multicast_endpoint(asio::ip::make_address(address), port),
+        isRunning(true){}
 
 void NetServerHandler::sendLoop(int interval_ms, shared_ptr<MouseCapture> mouseCapture)
 {
     MouseState state;
     uint8_t buf[16] = {};
+    this->setIsRunning(true);
 
-    while (true)
+    while (this->getIsRunning())
     {
         if (mouseCapture->poll(state))
         {
@@ -37,7 +45,8 @@ void NetServerHandler::sendLoop(int interval_ms, shared_ptr<KeyboardCapture> key
     uint8_t buf[16] = {};
     asio::error_code ec;
 
-    while (true)
+    this->setIsRunning(true);
+    while (this->getIsRunning())
     {
         if (keyboardCapture->poll(state))
         {
@@ -63,4 +72,8 @@ void NetServerHandler::sendCommand(uint8_t *data, int len)
         // std::cerr << "send_command failed: " << ec.message()
         //           << " (" << ec.value() << ")" << std::endl;
     }
+}
+
+void NetServerHandler::stop(){
+    this->setIsRunning(false);
 }

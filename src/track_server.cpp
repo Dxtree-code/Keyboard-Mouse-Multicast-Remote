@@ -14,9 +14,18 @@ TrackServer::TrackServer(std::string multicast_address, int multicast_port):
     io_context(),
     server(this->io_context, multicast_address, multicast_port),
     mouseTracker(MouseFactory::getMouseTrackerByOs(mCapture)),
-    keyboardTracker(KeyboardFactory::getKeyboardTrackerByOs(kCapture))
+    keyboardTracker(KeyboardFactory::getKeyboardTrackerByOs(kCapture)),
+    isRunning(true)
 {
   
+}
+
+void TrackServer::setIsRunning(bool value){
+    this->isRunning.store(value, std::memory_order_release);
+}
+
+bool TrackServer::getIsRunning(){
+    return this->isRunning.load(std::memory_order_acquire);
 }
 
 int TrackServer::startTrackServer()
@@ -36,6 +45,25 @@ int TrackServer::startTrackServer()
     }
 
     return 0;
+}
+
+void TrackServer::wait(){
+    while(this->getIsRunning()){
+        std::this_thread::sleep_for(std::chrono::seconds(WAIT_CHECKING_RATE));
+    }
+    this->stop();
+}
+
+void TrackServer::stop(){
+    this->setIsRunning(false);
+    this->mouseTracker.stop();
+    this->keyboardTracker.stop();
+    this->server.stop();
+    
+    if (this->mouseSenderThread.joinable()) this->mouseSenderThread.join();
+    if (this->mouseTrackerThread.joinable()) this->mouseTrackerThread.join();
+    if (this->keyboardSenderThread.joinable()) this->keyboardSenderThread.join();
+    if (this->keyboardTrackerThread.joinable()) this->keyboardTrackerThread.join();
 }
 
 void TrackServer::sendStopSignal(int ip[4])

@@ -33,10 +33,16 @@ class TrackServer
     thread mouseSenderThread;
     thread keyboardSenderThread;
 
+    atomic<bool> isRunning;
 
+    private:
+    void setIsRunning(bool value);
+    bool getIsRunning();
     public:
     int startTrackServer();
     TrackServer(string multicast_address, int multicast_port);
+    void wait();
+    void stop();
 
     void sendStopSignal(int ip[4]);
 };
