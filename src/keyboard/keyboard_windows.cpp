@@ -9,6 +9,10 @@ bool KeyboardTrackerWindows::setProcPtr(Proc &proc){
     
 }
 
+KeyboardTrackerWindows::~KeyboardTrackerWindows(){
+
+}
+
 KeyboardTrackerWindows::KeyboardTrackerWindows(shared_ptr<KeyboardCapture> capturer):
     KeyboardTracker(capturer)
 {
@@ -71,6 +75,15 @@ void KeyboardTrackerWindows::pollKeyboard()
 
     UnhookWindowsHookEx(this->hhook);
     return;
+}
+
+void KeyboardTrackerWindows::stop(){
+    this->setIsRunning(false);
+        if (this->hhook){
+            UnhookWindowsHookEx(this->hhook);
+            this->hhook = NULL;
+        }
+    PostQuitMessage(0);
 }
 
 // This for winodws Client. To simulate requeted keyboard input on client machine

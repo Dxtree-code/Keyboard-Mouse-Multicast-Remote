@@ -1,0 +1,24 @@
+{
+    "version": 4,
+    "configurePresets": [
+        {
+            "name": "base",
+            "generator": "MinGW Makefiles",
+            "cacheVariables": {
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_MAKE_PROGRAM":"make"
+            }
+        },
+        {
+            "name": "debug",
+            "inherits": "base",
+            "generator": "MinGW Makefiles",
+            "binaryDir": "./build/debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ]
+ 
+}

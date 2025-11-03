@@ -15,3 +15,7 @@ bool KeyboardTracker::getIsRunning(){
 
     return this->isRunning.load(std::memory_order_acquire);
 }
+
+KeyboardTracker::~KeyboardTracker(){
+    
+}

@@ -104,7 +104,7 @@ void MouseTrackerWindows::stop(){
 }
 
 
-void MouseExecutor::executeMouse(MouseState &state){
+void MouseExecutorWindows::executeMouse(MouseState &state){
     INPUT input = {0};
     input.type = INPUT_MOUSE;
 

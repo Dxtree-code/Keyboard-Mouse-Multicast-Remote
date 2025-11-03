@@ -15,7 +15,7 @@ class KeyboardTrackerWindows:public KeyboardTracker{
     HHOOK hhook;
     typedef  function<LRESULT(int nCode, WPARAM wParam, LPARAM lParam)> Proc;
     Proc proc;
-    static unique_ptr<Proc> procPtr;
+    inline static unique_ptr<Proc> procPtr;
     bool setProcPtr(Proc &proc);
 
     

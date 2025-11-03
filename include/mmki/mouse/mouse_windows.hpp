@@ -23,7 +23,7 @@ class MouseTrackerWindows : public MouseTracker{
 
     typedef  function<LRESULT(int nCode, WPARAM wParam, LPARAM lParam)> Proc;
     Proc proc;
-    static unique_ptr<Proc> procPtr;
+    inline static unique_ptr<Proc> procPtr;
 
     std::atomic<int> scrollDelta;
 

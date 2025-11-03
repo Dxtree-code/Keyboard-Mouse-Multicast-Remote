@@ -1,9 +1,12 @@
 #pragma once
 
+#include <memory>
+
 #include "asio.hpp"
 #include "mmki/keyboard/keyboard_capture.hpp"
 #include "mmki/mouse/mouse_capture.hpp"
 
+using std::shared_ptr;
 // A structure to provide facade to send input / command to client
 // This used on Server
 class NetServerHandler

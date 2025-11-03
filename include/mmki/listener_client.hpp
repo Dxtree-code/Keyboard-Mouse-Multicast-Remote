@@ -30,8 +30,8 @@ struct ListenerClient
     thread listenThread;
     thread executorThread;
     
-    MouseExecutor mousex;
-    KeyboardExecutor keyboardx;
+    MouseExecutor &mousex;
+    KeyboardExecutor &keyboardx;
     
 
     atomic<bool> isRunning = false;

@@ -26,10 +26,10 @@ class KeyboardTracker{
 
     bool getIsRunning();
     
-    virtual void stop();  
+    virtual void stop() = 0;  
 };
 
 class KeyboardExecutor{
     public:
-    virtual void executeKeyboard(KeyboardState &state);
+    virtual void executeKeyboard(KeyboardState &state) = 0;
 };

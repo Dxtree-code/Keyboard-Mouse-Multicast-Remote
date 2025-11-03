@@ -18,14 +18,14 @@ class MouseTracker{
     shared_ptr<MouseCapture> capturer;
 
     public:
-    virtual void pollMouse();
+    virtual void pollMouse() = 0;
 
     virtual ~MouseTracker();
 
     void setIsRunning(bool value);
     bool getIsRunning();
 
-    virtual void stop();
+    virtual void stop() = 0;
 };
 
 class MouseExecutor{
@@ -33,6 +33,6 @@ class MouseExecutor{
     MouseState prevMouseState;
 
     public:
-    virtual void  executeMouse(MouseState &state);
+    virtual void  executeMouse(MouseState &state) = 0;
 };
 

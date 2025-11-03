@@ -1,3 +1,4 @@
+#include <cstring>
 #include "mmki/network/net.hpp"
 
 bool NetData::setData(uint8_t *data, int len)
