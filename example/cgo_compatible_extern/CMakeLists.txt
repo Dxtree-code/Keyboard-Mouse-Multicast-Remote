@@ -1,5 +1,5 @@
 add_library(cgo_compatible extern.cpp)
-target_include_directories(cgo_compatible PRIVATE ${INCLUDES} extern.hpp)
+target_include_directories(cgo_compatible PRIVATE ${INCLUDES} ./)
 target_link_libraries(cgo_compatible PRIVATE mmki_lib ws2_32)
 set_target_properties(cgo_compatible PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/example/cgo_compatible")
 target_compile_options(cgo_compatible PRIVATE -Wall)
