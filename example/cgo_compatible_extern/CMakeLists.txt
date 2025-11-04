@@ -1,7 +1,19 @@
 add_library(cgo_compatible extern.cpp)
 target_include_directories(cgo_compatible PRIVATE ${INCLUDES} extern.hpp)
-target_link_libraries(cgo_compatible PRIVATE mmki_lib ws2_32)
 set_target_properties(cgo_compatible PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/example/cgo_compatible")
 target_compile_options(cgo_compatible PRIVATE -Wall)
-target_compile_definitions(cgo_compatible PRIVATE _WIN32_WINNT=0x0A00)
-target_link_options(cgo_compatible PRIVATE -static)
+
+# Platform-specific settings
+if(WIN32)
+    target_compile_definitions(cgo_compatible PRIVATE _WIN32_WINNT=0x0A00)
+    target_link_libraries(cgo_compatible PRIVATE mmki_lib ws2_32)
+    target_link_options(cgo_compatible PRIVATE -static)
+elseif(APPLE)
+    target_link_libraries(cgo_compatible PRIVATE mmki_lib)
+    # Add macOS-specific frameworks if needed  
+    target_link_libraries(cgo_compatible PRIVATE "-framework CoreGraphics" "-framework Carbon")
+    target_link_options(cgo_compatible PRIVATE -static)
+else()
+    target_link_libraries(cgo_compatible PRIVATE mmki_lib)
+    target_link_options(cgo_compatible PRIVATE -static)
+endif()
