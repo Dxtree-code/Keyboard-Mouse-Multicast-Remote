@@ -1,7 +1,7 @@
 #include "mmki/listener_client.hpp"
 #include "mmki/tools/serializer.hpp"
 #include "mmki/keyboard/keyboard.hpp"
-#include "mmki/mouse/mouse.hpp"
+#include "mmki/mouse/Mouse.hpp"
 #include "mmki/network/helper.hpp"
 #include "mmki/mouse/mouse_factory.hpp"
 #include "mmki/keyboard/keyboard_factory.hpp"

@@ -1,4 +1,4 @@
-#include "mmki/mouse/mouse.hpp"
+#include "mmki/mouse/Mouse.hpp"
 
 #ifdef _WIN32
 #include "mmki/mouse/mouse_windows.hpp"
