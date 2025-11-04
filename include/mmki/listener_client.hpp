@@ -27,18 +27,19 @@ struct ListenerClient
     NetBuffer dataBuffer;
     NetClientHandler netClient;
 
-    thread listenThread;
-    thread executorThread;
+    TimePoint lifeLimit;
+    int lifeDuration; // in second;
     
     MouseExecutor &mousex;
     KeyboardExecutor &keyboardx;
     
-
+    thread listenThread;
+    thread executorThread;
+    
     atomic<bool> isRunning = false;
     atomic<bool> hasNewData = false;
 
-    int lifeDuration = 0; // in second;
-    TimePoint lifeLimit;
+
     ListenerClient(string listenAddress, int port);
     ListenerClient(string listenAddress, int port, int lifeDuration);
     void startListener();
