@@ -34,8 +34,14 @@ target_sources(cgo_compatible PRIVATE
 # Add system sources (mirroring src/system/CMakeLists.txt)
 target_sources(cgo_compatible PRIVATE
     ${CMAKE_SOURCE_DIR}/src/system/system.cpp
-    ${CMAKE_SOURCE_DIR}/src/system/display.cpp
 )
+
+# Add Windows-specific system sources
+if(WIN32)
+    target_sources(cgo_compatible PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/system/display.cpp
+    )
+endif()
 
 # Add tools sources (mirroring src/tools/CMakeLists.txt)
 target_sources(cgo_compatible PRIVATE
