@@ -15,14 +15,15 @@ add_library(cgo_compatible STATIC
     ${CMAKE_SOURCE_DIR}/src/network/helper.cpp
     ${CMAKE_SOURCE_DIR}/src/network/net.cpp
     ${CMAKE_SOURCE_DIR}/src/system/system.cpp
-    ${CMAKE_SOURCE_DIR}/src/system/display.cpp
     ${CMAKE_SOURCE_DIR}/src/tools/serializer.cpp
 )
 
+# Add platform-specific sources
 if(WIN32)
     target_sources(cgo_compatible PRIVATE
         ${CMAKE_SOURCE_DIR}/src/mouse/mouse_windows.cpp
         ${CMAKE_SOURCE_DIR}/src/keyboard/keyboard_windows.cpp
+        ${CMAKE_SOURCE_DIR}/src/system/display.cpp
     )
 elseif(APPLE)
     target_sources(cgo_compatible PRIVATE
