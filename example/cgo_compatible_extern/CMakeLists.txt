@@ -1,27 +1,48 @@
-# Create a CGO-compatible static library with all source files included
-add_library(cgo_compatible STATIC 
-    extern.cpp
-    # Include all the mmki_lib source files directly
+# Create the CGO library exactly like mmki_lib, but with extern.cpp added
+add_library(cgo_compatible STATIC extern.cpp)
+
+# Add all the same sources that mmki_lib has, by replicating the target_sources calls
+target_sources(cgo_compatible PRIVATE 
     ${CMAKE_SOURCE_DIR}/src/listener_client.cpp
     ${CMAKE_SOURCE_DIR}/src/track_server.cpp
-    ${CMAKE_SOURCE_DIR}/src/mouse/mouse.cpp
-    ${CMAKE_SOURCE_DIR}/src/mouse/mouse_capture.cpp
-    ${CMAKE_SOURCE_DIR}/src/mouse/mouse_state.cpp
-    ${CMAKE_SOURCE_DIR}/src/mouse/mouse_factory.cpp
-    ${CMAKE_SOURCE_DIR}/src/keyboard/keyboard.cpp
-    ${CMAKE_SOURCE_DIR}/src/keyboard/keyboard_capture.cpp
+)
+
+# Add keyboard sources (mirroring src/keyboard/CMakeLists.txt)
+target_sources(cgo_compatible PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/keyboard/keyboard_capture.cpp 
     ${CMAKE_SOURCE_DIR}/src/keyboard/keyboard_state.cpp
+    ${CMAKE_SOURCE_DIR}/src/keyboard/keyboard.cpp
     ${CMAKE_SOURCE_DIR}/src/keyboard/keyboard_factory.cpp
+)
+
+# Add mouse sources (mirroring src/mouse/CMakeLists.txt) 
+target_sources(cgo_compatible PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/mouse/mouse_capture.cpp
+    ${CMAKE_SOURCE_DIR}/src/mouse/mouse_state.cpp 
+    ${CMAKE_SOURCE_DIR}/src/mouse/mouse.cpp
+    ${CMAKE_SOURCE_DIR}/src/mouse/mouse_factory.cpp
+)
+
+# Add network sources (mirroring src/network/CMakeLists.txt)
+target_sources(cgo_compatible PRIVATE
+    ${CMAKE_SOURCE_DIR}/src/network/helper.cpp
     ${CMAKE_SOURCE_DIR}/src/network/multicast_client.cpp
     ${CMAKE_SOURCE_DIR}/src/network/multicast_server.cpp
-    ${CMAKE_SOURCE_DIR}/src/network/helper.cpp
     ${CMAKE_SOURCE_DIR}/src/network/net.cpp
+)
+
+# Add system sources (mirroring src/system/CMakeLists.txt)
+target_sources(cgo_compatible PRIVATE
     ${CMAKE_SOURCE_DIR}/src/system/system.cpp
     ${CMAKE_SOURCE_DIR}/src/system/display.cpp
+)
+
+# Add tools sources (mirroring src/tools/CMakeLists.txt)
+target_sources(cgo_compatible PRIVATE
     ${CMAKE_SOURCE_DIR}/src/tools/serializer.cpp
 )
 
-# Add platform-specific source files
+# Add platform-specific sources (mirroring what's in src/*/CMakeLists.txt)
 if(WIN32)
     target_sources(cgo_compatible PRIVATE
         ${CMAKE_SOURCE_DIR}/src/mouse/mouse_windows.cpp
