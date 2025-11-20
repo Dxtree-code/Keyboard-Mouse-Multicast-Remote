@@ -10,7 +10,7 @@
 #include <memory>
 #include <functional>
 
-#include "mmki/mouse/mouse.hpp"
+#include "mmki/mouse/Mouse.hpp"
 #include "mmki/mouse/mouse_capture.hpp"
 
 using std::unique_ptr;

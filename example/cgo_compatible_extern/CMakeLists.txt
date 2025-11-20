@@ -18,7 +18,6 @@ add_library(cgo_compatible STATIC
     ${CMAKE_SOURCE_DIR}/src/tools/serializer.cpp
 )
 
-# Add platform-specific sources
 if(WIN32)
     target_sources(cgo_compatible PRIVATE
         ${CMAKE_SOURCE_DIR}/src/mouse/mouse_windows.cpp

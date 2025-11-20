@@ -5,7 +5,7 @@
 #include <memory>
 #include <atomic>
 
-#include "mmki/mouse/mouse.hpp"
+#include "mmki/mouse/Mouse.hpp"
 #include "mmki/mouse/mouse_capture.hpp"
 
 using std::shared_ptr;

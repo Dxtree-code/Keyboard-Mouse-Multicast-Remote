@@ -1,6 +1,9 @@
 #pragma once
 #include "../config.hpp"
+#ifdef _WIN32
 #include <windows.h>
+#endif
+
 enum SystemCommand{
     STOP = 0x8000,
     INVALID = 0x0000
