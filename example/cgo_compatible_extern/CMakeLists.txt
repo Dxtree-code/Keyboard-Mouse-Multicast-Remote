@@ -36,8 +36,15 @@ target_include_directories(cgo_compatible PRIVATE ${INCLUDES} ./)
 if(WIN32)
     target_compile_definitions(cgo_compatible PRIVATE _WIN32_WINNT=0x0A00)
 elseif(APPLE)
-    # Add macOS-specific frameworks (these will be needed when linking with Go)
-    # Note: Go will need to link these frameworks: -framework CoreGraphics -framework Carbon
+    find_library(CARBON_LIB Carbon)
+    find_library(COCOA_LIB Cocoa)
+    find_library(COREGRAPHICS_LIB CoreGraphics)
+
+    target_link_libraries(cgo_compatible PRIVATE 
+        ${CARBON_LIB} 
+        ${COCOA_LIB} 
+        ${COREGRAPHICS_LIB}
+    )
 endif()
 
 set_target_properties(cgo_compatible PROPERTIES 
