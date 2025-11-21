@@ -3,7 +3,7 @@
 #ifdef _WIN32
 #include "mmki/mouse/mouse_windows.hpp"
 #elif __APPLE__
-#include "mouse_mac.h"
+#include "mmki/mouse/mouse_mac.hpp"
 #endif
 
 
