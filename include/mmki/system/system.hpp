@@ -12,7 +12,9 @@ enum SystemCommand{
 
 struct DisplaySetting{
     int relativeDpi; // scale
+    #ifdef _WIN32
     DEVMODE originalDm;
+    #endif
 
     bool dpiChanged =  false;
     bool resChanged =  false;

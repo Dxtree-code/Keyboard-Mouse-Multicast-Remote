@@ -8,7 +8,7 @@
 // byte[12-15] = data3 [z]
 #include <stdint.h>
 
-#include "mmki/mouse/Mouse.hpp"
+#include "mmki/mouse/mouse.hpp"
 #include "mmki/keyboard/keyboard.hpp"
 #include "mmki/system/system.hpp"
 
