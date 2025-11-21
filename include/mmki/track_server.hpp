@@ -10,7 +10,7 @@
 #include "mmki/keyboard/keyboard_capture.hpp"
 #include "mmki/mouse/mouse_capture.hpp"
 #include "mmki/network/multicast_server.hpp"
-#include "mmki/mouse/Mouse.hpp"
+#include "mmki/mouse/mouse.hpp"
 #include "mmki/keyboard/keyboard.hpp"
 
 using std::atomic;

@@ -9,7 +9,7 @@
 
 #include "mmki/keyboard/keyboard.hpp"
 #include "mmki/keyboard/keyboard_capture.hpp"
-#include "mmki/mouse/Mouse.hpp"
+#include "mmki/mouse/mouse.hpp"
 #include "mmki/mouse/mouse_capture.hpp"
 #include "mmki/network/multicast_client.hpp"
 #include "mmki/network/net.hpp"
