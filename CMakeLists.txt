@@ -17,7 +17,23 @@ if(WIN32)
 endif()
 
 target_compile_options(mmki_lib PRIVATE -Wall)
+if(APPLE)
+    find_library(CARBON_LIB Carbon)
+    find_library(COCOA_LIB Cocoa)
+    find_library(COREGRAPHICS_LIB CoreGraphics)
+    find_library(IOKIT_LIB IOKit)
+    find_library(COREFOUNDATION_LIB CoreFoundation)
 
+    # Use PUBLIC so that any executable (like main_client) 
+    # that links mmki_lib AUTOMATICALLY links these too.
+    target_link_libraries(mmki_lib PUBLIC 
+        ${CARBON_LIB} 
+        ${COCOA_LIB} 
+        ${COREGRAPHICS_LIB} 
+        ${IOKIT_LIB}
+        ${COREFOUNDATION_LIB}
+    )
+endif()
 add_subdirectory(src)
 add_subdirectory(example/simple)
 add_subdirectory(example/cgo_compatible_extern)
