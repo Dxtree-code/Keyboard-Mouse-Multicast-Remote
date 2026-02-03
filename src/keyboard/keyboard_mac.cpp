@@ -17,7 +17,20 @@ KeyboardTrackerMac::KeyboardTrackerMac(shared_ptr<KeyboardCapture> capturer) : K
             CGKeyCode keyCode = (CGKeyCode)CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
             bool press = (type == kCGEventKeyDown);
             
-            this->capturer->push(press, static_cast<int>(keyCode));
+            switch (keyCode) {
+                case kVK_Command: // Command key
+                    this->capturer->push(press, static_cast<int>(KeyCode::Command));
+                    break;
+                case kVK_Option: // Option key
+                    this->capturer->push(press, static_cast<int>(KeyCode::Option));
+                    break;
+                case kVK_Control: // Control key
+                    this->capturer->push(press, static_cast<int>(KeyCode::Control));
+                    break;
+                default:
+                    this->capturer->push(press, static_cast<int>(keyCode));
+                    break;
+            }
         }
         return event;
     };
