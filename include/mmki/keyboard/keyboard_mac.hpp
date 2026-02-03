@@ -11,6 +11,12 @@
 using std::shared_ptr;
 using std::function;
 
+enum class KeyCode {
+    Command = 0x37,
+    Option = 0x3A,
+    Control = 0x3B
+};
+
 class KeyboardTrackerMac : public KeyboardTracker {
 private:
     CFMachPortRef eventTap = nullptr;
